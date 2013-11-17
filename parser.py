@@ -1,7 +1,9 @@
 import sys
+import os
 import getopt
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
 from matplotlib import animation
 
 
@@ -35,13 +37,29 @@ def main(argv):
    # onenode(str(argv))
 
 
-def oneNode(fileName):
-#plot one node
+def oneNode(opt, fileName):
+  """plot one node"""
   ax = fig.add_subplot(1,1,1)
   a = np.loadtxt(str(fileName[1]))
   x = a[:,0]
   y = a[:,1]
-  ax.plot(x,y,'bo--')
+  ax.plot(x,y,'--')
+  if opt == 1:
+    plt.show()
+
+def allNodesIn(cwd):
+  """plots all the .visplotX files found in the given dir
+  """
+  legendList = []
+  print("found the following:")
+  for argument in os.listdir(cwd):
+    if 'visplot' in argument:
+      oneNode(2,[1,str(cwd)+"/"+argument])
+      print(str(cwd)+"/"+argument)
+      legendList.append(str(argument))
+  ax = fig.add_subplot(1,1,1)
+  ax.legend(legendList)
+  plt.draw()
   plt.show()
 
 def allNodes(fileName):
@@ -57,7 +75,7 @@ def allNodes(fileName):
     nodes.append(line)
     i += 1
   #print(nodes[0])
-  print("totalNodes: "+str(len(nodes[0].split())))
+  print("totalNodes: "+str(len(nodes)))
   
   nodeContainer = [] #contains all the nodes
   for index in range(i):
@@ -93,12 +111,75 @@ def allNodes(fileName):
   print("second row: ")
   print(nodeContainer[0][:,1])
   ax = fig.add_subplot(1,1,1)
-  x0 = nodeContainer[0][:,1]
-  y0 = nodeContainer[0][:,2]
-  x1 = nodeContainer[1][:,1]
-  y1 = nodeContainer[1][:,2]
-  ax.plot(x0,y0,'bo--', x1, y1, 'go--')
+  legendList = []
+  for i in range(len(nodeContainer)):
+    ax.plot(nodeContainer[i][:,1],nodeContainer[i][:,2], '--')
+    legendList.append(str(i))
+  for j in range(len(nodeContainer[0][:,1])):
+      #annotates time in each data point for the first node
+      ax.annotate(str(nodeContainer[0][j][0]), (nodeContainer[0][j][1],nodeContainer[0][j][2]))
+  ax.legend(legendList)
   plt.show()
+
+def visplot(fileName):
+#plots all the nodes, but with no time info
+
+  f = open(str(fileName[1]))
+  i = 0
+  nodes = []
+
+  nodeContainer = [] #contains all the nodes
+  for index in range(len(f)):
+    #initialize all the nodes to zero
+    node = np.zeros((len(nodes[index].split())/3,3))
+    nodeContainer.append(node)
+  
+  for line in f:
+    nodes.append(line)
+    i += 1
+
+  print("totalNodes: "+str(len(f)))
+  
+  
+
+    
+  indexOfNodes = 0
+  listOfCoords = []
+
+  for element in nodes:
+    indexOfCoords = 0
+    #list of the coordenates of node "element" as [t0,x0,y0,t1...]
+    listOfCoords = element.split()
+    i = 0 #line of an specific node, so: [tn,xn,yn]
+    while indexOfCoords != len(listOfCoords):
+      #assigns the t (time) coordinate of node element
+      #if(indexOfNodes < 2):
+        #print("t: "+str(listOfCoords[indexOfCoords]))
+        #print("x: "+str(listOfCoords[indexOfCoords+1]))
+        #print("y: "+str(listOfCoords[indexOfCoords+2]))
+        #print("-------------------------------")
+      nodeContainer[indexOfNodes][i][0] = listOfCoords[indexOfCoords]
+      nodeContainer[indexOfNodes][i][1] = listOfCoords[indexOfCoords + 1]
+      nodeContainer[indexOfNodes][i][2] = listOfCoords[indexOfCoords + 2]
+      indexOfCoords += 3
+      i += 1
+    indexOfNodes += 1
+    
+  print("first row: ")
+  print(nodeContainer[0][:,0])
+  print("second row: ")
+  print(nodeContainer[0][:,1])
+  ax = fig.add_subplot(1,1,1)
+  legendList = []
+  for i in range(len(nodeContainer)):
+    ax.plot(nodeContainer[i][:,1],nodeContainer[i][:,2], '--')
+    legendList.append(str(i))
+  for j in range(len(nodeContainer[0][:,1])):
+      #annotates time in each data point for the first node
+      ax.annotate(str(nodeContainer[0][j][0]), (nodeContainer[0][j][1],nodeContainer[0][j][2]))
+  ax.legend(legendList)
+  plt.show()
+
 
 
 # initialization function: plot the background of each frame
