@@ -76,14 +76,14 @@ def allNodes(fileName):
     i += 1
   #print(nodes[0])
   print("totalNodes: "+str(len(nodes)))
-  
+
   nodeContainer = [] #contains all the nodes
   for index in range(i):
     #initialize all the nodes to zero
     node = np.zeros((len(nodes[index].split())/3,3))
     nodeContainer.append(node)
 
-    
+
   indexOfNodes = 0
   listOfCoords = []
 
@@ -105,11 +105,8 @@ def allNodes(fileName):
       indexOfCoords += 3
       i += 1
     indexOfNodes += 1
-    
-  print("first row: ")
-  print(nodeContainer[0][:,0])
-  print("second row: ")
-  print(nodeContainer[0][:,1])
+
+
   ax = fig.add_subplot(1,1,1)
   legendList = []
   for i in range(len(nodeContainer)):
@@ -117,7 +114,8 @@ def allNodes(fileName):
     legendList.append(str(i))
   for j in range(len(nodeContainer[0][:,1])):
       #annotates time in each data point for the first node
-      ax.annotate(str(nodeContainer[0][j][0]), (nodeContainer[0][j][1],nodeContainer[0][j][2]))
+      if(j==0 or j==len(nodeContainer[0][:,1])-1): #or j%10==0):
+        ax.annotate(str(nodeContainer[0][j][0]), (nodeContainer[0][j][1],nodeContainer[0][j][2]))
   ax.legend(legendList)
   plt.show()
 
@@ -133,16 +131,16 @@ def visplot(fileName):
     #initialize all the nodes to zero
     node = np.zeros((len(nodes[index].split())/3,3))
     nodeContainer.append(node)
-  
+
   for line in f:
     nodes.append(line)
     i += 1
 
   print("totalNodes: "+str(len(f)))
-  
-  
 
-    
+
+
+
   indexOfNodes = 0
   listOfCoords = []
 
@@ -164,7 +162,7 @@ def visplot(fileName):
       indexOfCoords += 3
       i += 1
     indexOfNodes += 1
-    
+
   print("first row: ")
   print(nodeContainer[0][:,0])
   print("second row: ")
