@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/main.cpp
+iostream
+-
+vector
+-
+fstream
+-
+cmath
+-
+
