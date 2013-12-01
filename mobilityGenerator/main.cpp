@@ -116,33 +116,35 @@ int main(int argc, char **argv) {
 //     }
 
 
-    for(int j = 0; j < NUM_NODES; j++){ //circle through nodes
+    for(int j = 0; j < NUM_NODES*2; j++){ //circle through nodes, all of them
+ //FIXME: This is fugly, what's a better way to do this?
       for(int i = 0; i < firefighter[j].getPosition().size(); i+=3){ //circle through node's vectorPosition content
-	if(i == 0){ //write initial position
-	  resultsFile << "$node_(" << j << ") set X_ " << dog[j].getPosition().at(i+1) << std::endl;
-	  resultsFile << "$node_(" << j << ") set Y_ " << dog[j].getPosition().at(i+2) << std::endl;
+	if(j<NUM_NODES){ //dogs
+	  if(i == 0){ //write initial position
+	    resultsFile << "$node_(" << j << ") set X_ " << dog[j].getPosition().at(i+1) << std::endl;
+	    resultsFile << "$node_(" << j << ") set Y_ " << dog[j].getPosition().at(i+2) << std::endl;
+	  }
+	  else{
+	    resultsFile << "$ns_ at " << dog[j].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
+	      dog[j].getPosition().at(i+1) << " " << dog[j].getPosition().at(i+2) << " " << dog[j].getSpeed() << "\"" <<std::endl;
+	  }
 	}
-	else{
-	  resultsFile << "$ns_ at " << dog[j].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
-	    dog[j].getPosition().at(i+1) << " " << dog[j].getPosition().at(i+2) << " " << dog[j].getSpeed() << "\"" <<std::endl;
+	else{ //firefighters
+	  if(i == 0){ //write initial position
+	    resultsFile << "$node_(" << j << ") set X_ " << firefighter[j-NUM_NODES].getPosition().at(i+1) << std::endl;
+	    resultsFile << "$node_(" << j << ") set Y_ " << firefighter[j-NUM_NODES].getPosition().at(i+2) << std::endl;
+	  }
+	  else{
+	    resultsFile << "$ns_ at " << firefighter[j-NUM_NODES].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
+	      firefighter[j-NUM_NODES].getPosition().at(i+1) << " " << firefighter[j-NUM_NODES].getPosition().at(i+2) << " " << 
+	      firefighter[j-NUM_NODES].getSpeed() << "\"" <<std::endl;
+	  }
 	}
-	//$ns_ at 0.0 "$node_(0) setdest 10.0 10.72 0.39999999999999997"
-	
       }
     }
 	
     resultsFile.close();
     //system(concat("gzip ", FILEPATH)); //FIXME: fugly 
     
-    
-/*
-  $node set X_ x1
-  $node set Y_ y1
-  $node set Z_ z1
-  $ns at $time $node setdest x2 y2 speed
-  $ns at $time $node set X_ x1
-  $ns at $time $node set Y_ Y1
-  $ns at $time $node set Z_ Z1
-*/
     return 0;
 }
