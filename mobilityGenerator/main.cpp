@@ -3,7 +3,10 @@
 #include <fstream>
 #include <cmath> 
 #include <cstdlib>
- 
+#include <random>
+#include "node.h" //here's the definition of a node
+
+
 //TODO: ask for the parameters in the cmd line
 //TODO: set some more realistic parameters and maybe change FIELD_SIZE_COORDS to DISTANCE_BETWEEN_NODES
 #define FIELD_SIZE_X 200
@@ -18,55 +21,33 @@
 #define SINE_ARC_LENGTH 7.64
 #define PI 3.14159265
 #define FILEPATH "../../data/scenario3.movements"
+#define FILEPATH1 "../../data/ns_scenario3.movements"
 #define DOG_SPEED (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI)
-#define concat(first, second) first second
+#define concat(first, second) first second //remove?
+#define PROB	2 //in per mil
+#define SEED 333 //to make it truly random set to 0
 
-class Node {
-    std::vector<double> vectorPosition;
-    double x, y;
-    double speed;
-    
-  public:
-    Node();
-    void setPosition (double,double, double);
-    void setSpeed(double);
-    const std::vector<double> getPosition();
-    const double getSpeed();
-};
-
-Node::Node ()
-{
-  speed = SPEED_NODES;
-}
-
-
-void Node::setPosition (double a, double b, double c) {
-  vectorPosition.push_back(a);
-  vectorPosition.push_back(b);
-  vectorPosition.push_back(c);
-}
-
-void Node::setSpeed(double s){
-  speed = s;
-}
-
-const double Node::getSpeed(){
-  return speed;
-}
-
-
-const std::vector<double> Node::getPosition(){
-  return vectorPosition;
+int random_integer(std::mt19937& generator, int n){
+    /*returns a random integer between 0 and n*/
+    std::uniform_int_distribution<int> dist_n(0, n);
+    return dist_n(generator);
 }
 
 int main(int argc, char **argv) {
     
   double time;
   double prevPosYFF, prevPosXFF, prevPosXD, prevPosYD, yPos;
+  double yDeviation, xDeviation;
   const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
   const double timeStep = (double) DURATION/SAMPLES_NUMBER;  std::cout << "timestep: " << timeStep << std::endl;
-  std::ofstream resultsFile;
-  resultsFile.open(FILEPATH, std::ofstream::out | std::ofstream::trunc);
+  std::ofstream resultsFile, nsFile;
+  nsFile.open(FILEPATH, std::ofstream::out | std::ofstream::trunc); //to feed into ns-3
+  resultsFile.open(FILEPATH1, std::ofstream::out | std::ofstream::trunc); //for debugging purposes
+
+  std::random_device rd;
+  int seedForGen;
+  SEED == 0 ? seedForGen = rd() : seedForGen = SEED;
+  std::mt19937 gen(seedForGen);
   
   Node firefighter[NUM_NODES], dog[NUM_NODES]; 
   
@@ -88,32 +69,51 @@ int main(int argc, char **argv) {
     //TODO: randomize speed and x movement
     time += timeStep;
     for(int i = 0; i<NUM_NODES; i++){
-      //prevPosY =  firefighter[i].getPos().at(1);
+      //load position at t-1 from the corresponding node's vectorPosition
       prevPosYFF = *(firefighter[i].getPosition().end()-1);
       prevPosXFF = *(firefighter[i].getPosition().end()-2);
       prevPosXD = *(dog[i].getPosition().end()-2);
       prevPosYD = *(dog[i].getPosition().end()-1);
+      //update position of firefighters
       firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES);
-      dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(yPos/8), prevPosYD + timeStep*SPEED_NODES);
-
-      //std::cout << "["<<time<<"] Firefighter " << i << " at ("<< prevPosXFF << ","<< prevPosYFF <<")" << std::endl;
-      std::cout << "["<<time<<"] dog " << i << " at ("<< *(dog[i].getPosition().begin()+1)+DELTA_X*cos(yPos) << ","<< yPos <<")" << std::endl;
+      //update position of dogs
+      if(dog[i].isDogAstray == false){
+	if(random_integer(gen, 1000) < PROB){
+	  dog[i].isDogAstray = true;
+	  std::cout << "dog[" << i << "] has gone stray" << std::endl;
+	  std::cout << "current pos: ("<< prevPosXD <<"," << prevPosYD << ")" << std::endl;
+	  do{ //calculate new random position, making sure it doesn't go out of bounds
+	    yDeviation = random_integer(gen, 100) - 50;
+	    xDeviation = random_integer(gen, 100) - 50;
+	  }while((yDeviation + prevPosYD) < 0 and (xDeviation + prevPosXD) < 0);
+	  dog[i].setNextPosition(xDeviation + prevPosXD, yDeviation + prevPosYD);
+	  std::cout << "next pos: ("<< xDeviation + prevPosXD  <<"," << yDeviation + prevPosYD << ")" << std::endl;
+	}
+	dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(yPos/8), prevPosYD + 
+	  timeStep*SPEED_NODES);
+      }
+      else{ //isDogAstray == true
+	//dog[i].setPosition(time, *(dog[i].getNextPosition().begin()), *(dog[i].getNextPosition().begin()+1));
+	dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(yPos/8), prevPosYD + 
+	  timeStep*SPEED_NODES);
+	dog[i].isDogAstray = false;
+      }
     }
     yPos += (timeStep*SPEED_NODES); //FIXME: there is no need for this, but I'm too tired to change it now
    
   }
   
   //writing output to a file
-//     for(int j = 0; j < NUM_NODES; j++){ //circle through nodes
-//       for(int i = 0; i < firefighter[j].getPosition().size(); i++){ //circle through node's vectorPosition content
-// 	resultsFile << firefighter[j].getPosition().at(i) << " ";
-//       }
-//       resultsFile << std::endl;
-//       for(int i = 0; i < dog[j].getPosition().size(); i++){ //circle through node's vectorPosition content
-// 	resultsFile << dog[j].getPosition().at(i) << " ";
-//       }
-//       resultsFile << std::endl;
-//     }
+    for(int j = 0; j < NUM_NODES; j++){ //circle through nodes
+      for(int i = 0; i < firefighter[j].getPosition().size(); i++){ //circle through node's vectorPosition content
+	nsFile << firefighter[j].getPosition().at(i) << " ";
+      }
+      nsFile << std::endl;
+      for(int i = 0; i < dog[j].getPosition().size(); i++){ //circle through node's vectorPosition content
+	nsFile << dog[j].getPosition().at(i) << " ";
+      }
+      nsFile << std::endl;
+    }
 
 
     for(int j = 0; j < NUM_NODES*2; j++){ //circle through nodes, all of them
@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
     }
 	
     resultsFile.close();
-    //system(concat("gzip ", FILEPATH)); //FIXME: fugly 
+    nsFile.close();
     
     return 0;
 }
