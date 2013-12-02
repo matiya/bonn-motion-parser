@@ -6,17 +6,21 @@
 class Node {
     std::vector<double> vectorPosition;
     std::vector<double> nextPosition;
+    std::vector<double> versor;
     double x, y;
     double speed;
     
   public:
-    bool isDogAstray = false;
+    bool isAstray = false;
+    bool isReturning = false;
     Node();
     void setPosition (double,double, double);
     void setNextPosition (double,double);
+    void setVersor (double,double);
     void setSpeed(double);
     const std::vector<double> getPosition();
     const std::vector<double> getNextPosition();
+    const std::vector<double> getVersor();
     const double getSpeed();
 };
 
@@ -37,6 +41,12 @@ void Node::setNextPosition (double a,double b){
   nextPosition.push_back(b);
 }
 
+
+void Node::setVersor (double a,double b){
+  versor.push_back(a);
+  versor.push_back(b);
+}
+
 void Node::setSpeed(double s){
   speed = s;
 }
@@ -47,6 +57,10 @@ const std::vector<double> Node::getPosition(){
 
 const std::vector<double> Node::getNextPosition(){
   return nextPosition;
+}
+
+const std::vector<double> Node::getVersor(){
+  return versor;
 }
 
 const double Node::getSpeed(){

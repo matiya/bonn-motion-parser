@@ -5,27 +5,8 @@
 #include <cstdlib>
 #include <random>
 #include "node.h" //here's the definition of a node
-
-
-//TODO: ask for the parameters in the cmd line
-//TODO: set some more realistic parameters and maybe change FIELD_SIZE_COORDS to DISTANCE_BETWEEN_NODES
-#define FIELD_SIZE_X 200
-#define FIELD_SIZE_Y 200
-#define NUM_NODES 6 //actually 6 firefighters and 6 dogs, so 12
-#define SPEED_NODES 0.4 //m/s
-#define STARTING_POS_X 100
-#define STARTING_POS_Y 100
-#define SAMPLES_NUMBER 500
-#define DURATION 900
-#define DELTA_X 15 //(m) this is the distance the dogs will travel before returning
-#define SINE_ARC_LENGTH 7.64
-#define PI 3.14159265
-#define FILEPATH "../../data/scenario3.movements"
-#define FILEPATH1 "../../data/ns_scenario3.movements"
-#define DOG_SPEED (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI)
-#define concat(first, second) first second //remove?
-#define PROB	2 //in per mil
-#define SEED 333 //to make it truly random set to 0
+#include "parameters.h"
+//FIXME: make sure that the sine wave doesn't start in 0 so that there are no neg values in x axis
 
 int random_integer(std::mt19937& generator, int n){
     /*returns a random integer between 0 and n*/
@@ -37,7 +18,7 @@ int main(int argc, char **argv) {
     
   double time;
   double prevPosYFF, prevPosXFF, prevPosXD, prevPosYD, yPos;
-  double yDeviation, xDeviation;
+  double yDeviation, xDeviation, xDir, yDir;
   const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
   const double timeStep = (double) DURATION/SAMPLES_NUMBER;  std::cout << "timestep: " << timeStep << std::endl;
   std::ofstream resultsFile, nsFile;
@@ -69,38 +50,64 @@ int main(int argc, char **argv) {
     //TODO: randomize speed and x movement
     time += timeStep;
     for(int i = 0; i<NUM_NODES; i++){
+      
       //load position at t-1 from the corresponding node's vectorPosition
       prevPosYFF = *(firefighter[i].getPosition().end()-1);
       prevPosXFF = *(firefighter[i].getPosition().end()-2);
       prevPosXD = *(dog[i].getPosition().end()-2);
       prevPosYD = *(dog[i].getPosition().end()-1);
+      
       //update position of firefighters
       firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES);
+      
       //update position of dogs
-      if(dog[i].isDogAstray == false){
+      if(!dog[i].isAstray){
 	if(random_integer(gen, 1000) < PROB){
-	  dog[i].isDogAstray = true;
-	  std::cout << "dog[" << i << "] has gone stray" << std::endl;
+	  dog[i].isAstray = true;
+	  std::cout << "dog[" << i << "] has gone astray" << std::endl;
 	  std::cout << "current pos: ("<< prevPosXD <<"," << prevPosYD << ")" << std::endl;
+	  
 	  do{ //calculate new random position, making sure it doesn't go out of bounds
 	    yDeviation = random_integer(gen, 100) - 50;
 	    xDeviation = random_integer(gen, 100) - 50;
+	    std::cout << i << " : dev : " << yDeviation + prevPosYD << " , " << xDeviation + prevPosXD << std::endl;
 	  }while((yDeviation + prevPosYD) < 0 and (xDeviation + prevPosXD) < 0);
 	  dog[i].setNextPosition(xDeviation + prevPosXD, yDeviation + prevPosYD);
+	  
+	  //calculate the versor which points in said direction
+	  xDir = *(dog[i].getNextPosition().begin()) - prevPosXD;
+	  yDir = *(dog[i].getNextPosition().begin()+1) - prevPosYD;
+	  dog[i].setVersor( xDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)),
+			    yDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)));
 	  std::cout << "next pos: ("<< xDeviation + prevPosXD  <<"," << yDeviation + prevPosYD << ")" << std::endl;
+	  std::cout << "versor: ("<< *(dog[i].getVersor().begin()) <<"," 
+		    << *(dog[i].getVersor().begin()+1)<< ")" << std::endl;
 	}
-	dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(yPos/8), prevPosYD + 
+	
+	dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(prevPosYD/8), prevPosYD + 
 	  timeStep*SPEED_NODES);
       }
-      else{ //isDogAstray == true
-	//dog[i].setPosition(time, *(dog[i].getNextPosition().begin()), *(dog[i].getNextPosition().begin()+1));
-	dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(yPos/8), prevPosYD + 
-	  timeStep*SPEED_NODES);
-	dog[i].isDogAstray = false;
+      else{ //isAstray == true
+	if(!dog[i].isReturning){
+	  std::cout << i << " : " << *(dog[i].getNextPosition().begin()) - prevPosXD << std::endl;
+	  if( std::abs(*(dog[i].getNextPosition().begin()) - prevPosXD) > 2){
+	    dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
+				prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
+	  }
+	  else{
+	  std::cout << i <<" dog reached destination, returning " << std::endl;
+	  dog[i].isReturning = true;
+	  dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(prevPosYD/8), prevPosYD + 
+	    timeStep*SPEED_NODES);
+	  }
+	}
+	else { //isReturning == true
+	  dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(prevPosYD/8), prevPosYD + 
+	    timeStep*SPEED_NODES);
+	}
+	
       }
     }
-    yPos += (timeStep*SPEED_NODES); //FIXME: there is no need for this, but I'm too tired to change it now
-   
   }
   
   //writing output to a file
@@ -117,7 +124,6 @@ int main(int argc, char **argv) {
 
 
     for(int j = 0; j < NUM_NODES*2; j++){ //circle through nodes, all of them
- //FIXME: This is fugly, what's a better way to do this?
       for(int i = 0; i < firefighter[j].getPosition().size(); i+=3){ //circle through node's vectorPosition content
 	if(j<NUM_NODES){ //dogs
 	  if(i == 0){ //write initial position
