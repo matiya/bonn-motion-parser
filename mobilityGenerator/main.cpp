@@ -1,7 +1,5 @@
 #include <iostream>
-#include <vector>
 #include <fstream>
-#include <cmath> 
 #include <cstdlib>
 #include <random>
 #include "node.h" //here's the definition of a node
@@ -34,8 +32,6 @@ int main(int argc, char **argv) {
   
   //set the intial positions and speed
   //TODO: allow the user to enter positions through a txt file
-
-  
   for(int i = 0; i < NUM_NODES ; i++){
     firefighter[i].setPosition(0, 0 + i*rfDist, 0);
     firefighter[i].setSpeed(SPEED_NODES);
@@ -72,13 +68,8 @@ int main(int argc, char **argv) {
 	    xDeviation = random_integer(gen, 100) - 50;
 	    std::cout << i << " : dev : " << yDeviation + prevPosYD << " , " << xDeviation + prevPosXD << std::endl;
 	  }while((yDeviation + prevPosYD) < 0 and (xDeviation + prevPosXD) < 0);
-	  dog[i].setNextPosition(xDeviation + prevPosXD, yDeviation + prevPosYD);
-	  
 	  //calculate the versor which points in said direction
-	  xDir = *(dog[i].getNextPosition().begin()) - prevPosXD;
-	  yDir = *(dog[i].getNextPosition().begin()+1) - prevPosYD;
-	  dog[i].setVersor( xDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)),
-			    yDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)));
+	  dog[i].calcVersor(xDeviation + prevPosXD, yDeviation + prevPosYD);	  
 	  std::cout << "next pos: ("<< xDeviation + prevPosXD  <<"," << yDeviation + prevPosYD << ")" << std::endl;
 	  std::cout << "versor: ("<< *(dog[i].getVersor().begin()) <<"," 
 		    << *(dog[i].getVersor().begin()+1)<< ")" << std::endl;
@@ -88,22 +79,43 @@ int main(int argc, char **argv) {
 	  timeStep*SPEED_NODES);
       }
       else{ //isAstray == true
+	
 	if(!dog[i].isReturning){
+	  
 	  std::cout << i << " : " << *(dog[i].getNextPosition().begin()) - prevPosXD << std::endl;
+	  
 	  if( std::abs(*(dog[i].getNextPosition().begin()) - prevPosXD) > 2){
 	    dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
 				prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
 	  }
 	  else{
-	  std::cout << i <<" dog reached destination, returning " << std::endl;
+	  //TODO: Add pause();	  
+	  std::cout << i <<" dog reached destination " << std::endl;
 	  dog[i].isReturning = true;
-	  dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(prevPosYD/8), prevPosYD + 
-	    timeStep*SPEED_NODES);
+	  dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
+				prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
 	  }
+	  
 	}
+	
 	else { //isReturning == true
-	  dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(prevPosYD/8), prevPosYD + 
-	    timeStep*SPEED_NODES);
+	  //locate corresponding firefighter (has the same i?)
+	  //calculate versor
+	  //speed up 
+	  dog[i].calcVersor(prevPosXFF, prevPosYFF);
+	  dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
+				  prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
+	  
+	  if( std::abs(*(dog[i].getNextPosition().begin()) - prevPosXFF) > 1 ){
+	    std::cout << i << " returning : " << *(dog[i].getNextPosition().begin()) - prevPosXD << std::endl;
+	    
+	  }
+	  else{
+	    std::cout << "dog has returned to firefighter" << std::endl;
+	    //dog[i].isAstray = false;
+// 	    dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
+// 				  prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
+	  }
 	}
 	
       }
