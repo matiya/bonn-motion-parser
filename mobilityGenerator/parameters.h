@@ -16,8 +16,8 @@
 #define DELTA_X 15 //(m) this is the distance the dogs will travel before returning
 #define SINE_ARC_LENGTH 7.64
 #define PI 3.14159265
-#define FILEPATH "../../data/scenario5.movements" //FIXME
-#define FILEPATH1 "../../data/ns_scenario5.movements"
+#define FILEPATH "../../data/scenario6.movements" //FIXME
+#define FILEPATH1 "../../data/ns_scenario6.movements"
 #define DOG_SPEED (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI)
 #define concat(first, second) first second //remove?
 #define PROB	2 //in per mil
