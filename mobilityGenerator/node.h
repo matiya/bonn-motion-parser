@@ -17,7 +17,6 @@ class Node {
     bool isReturning = false;
     Node();
     void setPosition (double,double, double);
-    void setNextPosition (double,double);//remove
     void setVersor (double,double);
     void calcVersor ( double, double);
     void setSpeed(double);
@@ -38,19 +37,6 @@ void Node::setPosition (double a, double b, double c) {
   vectorPosition.push_back(b);
   vectorPosition.push_back(c);
 }
-/*
-void Node::setNextPosition (double a,double b){
-  nextPosition.push_back(a);
-  nextPosition.push_back(b);
-}*/
-
-// void Node::calcVersor ( double prevPosXD, double prevPosYD){
-//   //calculate the versor which points in the direction goalPosition - currentPosition
-//   xDir = *(nextPosition.begin()) - prevPosXD;
-//   yDir = *(nextPosition.begin()+1) - prevPosYD;
-//   setVersor( xDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)) ,
-// 	     yDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)));
-// }
 
 void Node::calcVersor ( double goalPosX, double goalPosY){
   /*calculate the versor which points in the direction goalPosition - currentPosition*/

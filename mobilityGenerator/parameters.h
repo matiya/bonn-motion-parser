@@ -1,5 +1,5 @@
-#ifndef PARAMETERS.H
-#define PARAMETERS.H
+#ifndef PARAMETERS_H
+#define PARAMETERS_H
 
 //TODO: ask for the parameters in the cmd line
 //TODO: set some more realistic parameters and maybe change FIELD_SIZE_COORDS to DISTANCE_BETWEEN_NODES
@@ -16,11 +16,11 @@
 #define DELTA_X 15 //(m) this is the distance the dogs will travel before returning
 #define SINE_ARC_LENGTH 7.64
 #define PI 3.14159265
-#define FILEPATH "../../data/scenario6.movements" //FIXME
-#define FILEPATH1 "../../data/ns_scenario6.movements"
+#define FILEPATH "../../data/scenario7.movements" //FIXME
+#define FILEPATH1 "../../data/ns_scenario7.movements"
 #define DOG_SPEED (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI)
 #define concat(first, second) first second //remove?
 #define PROB	2 //in per mil
-#define SEED 102 //to make it truly random set to 0
+#define SEED 10//to make it truly random set to 0
 
 #endif//PARAMETERS.H
