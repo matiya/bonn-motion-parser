@@ -18,16 +18,16 @@ double normal_integer(std::default_random_engine& generator, double mean, double
   std::normal_distribution<double> distribution(mean, stdDeviation);
   return std::abs(distribution(generator));
 }
-
+using namespace CommandLineProcessing;
 int main(int argc, char **argv) {
+  
   ArgvParser parser;
-  //ArgvParser parser;
 //   parser.defineOption("first_long");
-//   parser.defineOption("f", "", ArgvParser::OptionRequired);
-//   parser.defineOption("d", "", ArgvParser::OptionRequired);
-//   if (parser.parse(argc, argv) != ArgvParser::ParserRequiredOptionMissing)
+//   parser.defineOption("f", "", CommandLineProcessing::ArgvParser::OptionRequired);
+//   parser.defineOption("d", "", CommandLineProcessing::ArgvParser::OptionRequired);
+//   if (parser.parse(argc, argv) != CommandLineProcessing::ArgvParser::ParserRequiredOptionMissing)
 //     std::cout << "nothing" << std::endl;
-//   
+   
   
   double time;
   double prevPosYFF, prevPosXFF, prevPosXD, prevPosYD, yPos;
