@@ -2,9 +2,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <random>
-#include "node.h" //here's the definition of a node
+#include "node.h" 
 #include "parameters.h"
-//FIXME: make sure that the sine wave doesn't start in 0 so that there are no neg values in x axis
+#include "argvparser.h"
 
 int random_integer(std::mt19937& generator, int n){
     /*returns a random integer between 0 and n*/
@@ -12,49 +12,71 @@ int random_integer(std::mt19937& generator, int n){
     return dist_n(generator);
 }
 
+double normal_integer(std::default_random_engine& generator, double mean, double stdDeviation){
+
+  //std::default_random_engine generator;
+  std::normal_distribution<double> distribution(mean, stdDeviation);
+  return std::abs(distribution(generator));
+}
+
 int main(int argc, char **argv) {
-    
+  ArgvParser parser;
+  //ArgvParser parser;
+//   parser.defineOption("first_long");
+//   parser.defineOption("f", "", ArgvParser::OptionRequired);
+//   parser.defineOption("d", "", ArgvParser::OptionRequired);
+//   if (parser.parse(argc, argv) != ArgvParser::ParserRequiredOptionMissing)
+//     std::cout << "nothing" << std::endl;
+//   
+  
   double time;
   double prevPosYFF, prevPosXFF, prevPosXD, prevPosYD, yPos;
   double yDeviation, xDeviation, xDir, yDir;
+  double dogSpeed;
   const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
-  const double timeStep = (double) DURATION/SAMPLES_NUMBER;  std::cout << "timestep: " << timeStep << std::endl;
+  const double timeStep = (double) DURATION/SAMPLES_NUMBER;  //std::cout << "timestep: " << timeStep << std::endl;
   std::ofstream resultsFile, nsFile;
-  nsFile.open(FILEPATH, std::ofstream::out | std::ofstream::trunc); //to feed into ns-3
-  resultsFile.open(FILEPATH1, std::ofstream::out | std::ofstream::trunc); //for debugging purposes
+  nsFile.open(FILEPATH1, std::ofstream::out | std::ofstream::trunc); //to feed into ns-3
+  resultsFile.open(FILEPATH, std::ofstream::out | std::ofstream::trunc); //for debugging purposes
 
   std::random_device rd;
+  
   int seedForGen;
   SEED == 0 ? seedForGen = rd() : seedForGen = SEED;
   std::mt19937 gen(seedForGen);
+  std::default_random_engine gen2(rd());
+  
+  
   
   Node firefighter[NUM_NODES], dog[NUM_NODES]; 
   
   //set the intial positions and speed
-  //TODO: allow the user to enter positions through a txt file
   for(int i = 0; i < NUM_NODES ; i++){
-    firefighter[i].setPosition(0, 0 + i*rfDist, 0);
+    firefighter[i].setPosition(0, DELTA_X + i*rfDist, 0, SPEED_NODES);
     firefighter[i].setSpeed(SPEED_NODES);
-    dog[i].setPosition(0, 0 + i*rfDist, 0);
+    dog[i].setPosition(0, DELTA_X + i*rfDist, 0, SPEED_NODES);
     dog[i].setSpeed(DOG_SPEED);
   }
   
   //update nodes positions
   while(time < DURATION){
     
-    //TODO: throw exceptions when surpassing field limits
-    //TODO: randomize speed and x movement
     time += timeStep;
     for(int i = 0; i<NUM_NODES; i++){
-      
       //load position at t-1 from the corresponding node's vectorPosition
-      prevPosYFF = *(firefighter[i].getPosition().end()-1);
-      prevPosXFF = *(firefighter[i].getPosition().end()-2);
-      prevPosXD = *(dog[i].getPosition().end()-2);
-      prevPosYD = *(dog[i].getPosition().end()-1);
+      try{
+	prevPosYFF = *(firefighter[i].getPosition().end()-2);
+	prevPosXFF = *(firefighter[i].getPosition().end()-3);
+	prevPosXD = *(dog[i].getPosition().end()-3);
+	prevPosYD = *(dog[i].getPosition().end()-2);
+	dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
+      }
+      catch(std::exception& e){
+	//std::cout << "ERROR: accesing previous positions" << std::endl;
+      }
       
       //update position of firefighters
-      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES);
+      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES, SPEED_NODES);
       
       //update position of dogs
       if(!dog[i].isAstray){
@@ -73,41 +95,48 @@ int main(int argc, char **argv) {
 	  dog[i].calcVersor(xDeviation + prevPosXD, yDeviation + prevPosYD);	  
 	  std::cout << "next pos: ("<< xDeviation + prevPosXD  <<"," << yDeviation + prevPosYD << ")" << std::endl;
 	  std::cout << "versor: ("<< *(dog[i].getVersor().begin()) <<"," 
-		    << *(dog[i].getVersor().begin()+1)<< ")" << std::endl;
+		    << *(dog[i].getVersor().begin()+1)<< ")\n" << std::endl;
 	}
-	
-	dog[i].setPosition(time, *(dog[i].getPosition().begin()+1)+DELTA_X*cos(prevPosYD/8), prevPosYD + 
-	  timeStep*SPEED_NODES);
+	else{
+	  dog[i].calcVersor(*(dog[i].getPosition().begin()+1)+DELTA_X*std::cos((prevPosYD + timeStep*SPEED_NODES)/8), 
+			    prevPosYFF + timeStep*SPEED_NODES  + DELTA_Y); //tiempo
+	}
+	  
+	  dog[i].setPosition(time, 
+			     prevPosXD + *(dog[i].getVersor().begin())*timeStep*dogSpeed,
+			     prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*dogSpeed,
+			     dogSpeed);
+
       }
       else{ //isAstray == true
 	
 	if(!dog[i].isReturning){
-	  //std::cout << "debug: " << std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
-		//std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) << std::endl;
+	  //when the dog is whithin 2 (m) from the firefighter, is no longer astray
+	  if(i==0)std::cout << "debug: " << std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
+		std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) << std::endl;
 	  if(std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
 		std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) > 2){
-	    dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
-				prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
+	    dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*dogSpeed,
+				prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*dogSpeed,
+				dogSpeed);
 	  }
 	  else{
-	  //TODO: Add pause();	  
-	  std::cout << "@" << time << "s dog[" << i <<"] reached goal destination " << std::endl;
-	  dog[i].isReturning = true;
-	  dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
-				prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
+	    //TODO: Add pause();	  
+	    std::cout << "@" << time << "s dog[" << i <<"] reached goal destination " << std::endl;
+	    dog[i].isReturning = true;
+	    dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*dogSpeed,
+				  prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*dogSpeed,
+				  dogSpeed);
 	  }
 	  
 	}
 
 	else { //isReturning == true
-	  //locate corresponding firefighter (has the same i?)
-	  //calculate versor
-	  //speed up 
-	  std::cout << "pos0: " << prevPosXD << ", " << prevPosYD << std::endl;
 	  dog[i].calcVersor(prevPosXFF, prevPosYFF);
-	  dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*DOG_SPEED,
-				  prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*DOG_SPEED);
-		       
+	  dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*dogSpeed,
+			     prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*dogSpeed,
+			     dogSpeed);
+			
 	  if(std::sqrt(std::pow(prevPosXD - prevPosXFF,2) + 
 		       std::pow(prevPosYD - prevPosYFF,2)) < 2){
 	    std::cout  << "@" << time << "s dog[" << i <<"] has returned to firefighter" << std::endl;
@@ -122,35 +151,34 @@ int main(int argc, char **argv) {
   //writing output to a file
     for(int j = 0; j < NUM_NODES; j++){ //circle through nodes
       for(int i = 0; i < firefighter[j].getPosition().size(); i++){ //circle through node's vectorPosition content
-	nsFile << firefighter[j].getPosition().at(i) << " ";
+	resultsFile << firefighter[j].getPosition().at(i) << " ";
       }
-      nsFile << std::endl;
+      resultsFile << std::endl;
       for(int i = 0; i < dog[j].getPosition().size(); i++){ //circle through node's vectorPosition content
-	nsFile << dog[j].getPosition().at(i) << " ";
+	resultsFile << dog[j].getPosition().at(i) << " ";
       }
-      nsFile << std::endl;
+      resultsFile << std::endl;
     }
 
-
     for(int j = 0; j < NUM_NODES*2; j++){ //circle through nodes, all of them
-      for(int i = 0; i < firefighter[j].getPosition().size(); i+=3){ //circle through node's vectorPosition content
+      for(int i = 0; i < firefighter[j].getPosition().size(); i+=4){ //circle through node's vectorPosition content
 	if(j<NUM_NODES){ //dogs
 	  if(i == 0){ //write initial position
-	    resultsFile << "$node_(" << j << ") set X_ " << dog[j].getPosition().at(i+1) << std::endl;
-	    resultsFile << "$node_(" << j << ") set Y_ " << dog[j].getPosition().at(i+2) << std::endl;
+	    nsFile << "$node_(" << j << ") set X_ " << dog[j].getPosition().at(i+1) << std::endl;
+	    nsFile << "$node_(" << j << ") set Y_ " << dog[j].getPosition().at(i+2) << std::endl;
 	  }
 	  else{
-	    resultsFile << "$ns_ at " << dog[j].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
+	    nsFile << "$ns_ at " << dog[j].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
 	      dog[j].getPosition().at(i+1) << " " << dog[j].getPosition().at(i+2) << " " << dog[j].getSpeed() << "\"" <<std::endl;
 	  }
 	}
 	else{ //firefighters
 	  if(i == 0){ //write initial position
-	    resultsFile << "$node_(" << j << ") set X_ " << firefighter[j-NUM_NODES].getPosition().at(i+1) << std::endl;
-	    resultsFile << "$node_(" << j << ") set Y_ " << firefighter[j-NUM_NODES].getPosition().at(i+2) << std::endl;
+	    nsFile << "$node_(" << j << ") set X_ " << firefighter[j-NUM_NODES].getPosition().at(i+1) << std::endl;
+	    nsFile << "$node_(" << j << ") set Y_ " << firefighter[j-NUM_NODES].getPosition().at(i+2) << std::endl;
 	  }
 	  else{
-	    resultsFile << "$ns_ at " << firefighter[j-NUM_NODES].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
+	    nsFile << "$ns_ at " << firefighter[j-NUM_NODES].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
 	      firefighter[j-NUM_NODES].getPosition().at(i+1) << " " << firefighter[j-NUM_NODES].getPosition().at(i+2) << " " << 
 	      firefighter[j-NUM_NODES].getSpeed() << "\"" <<std::endl;
 	  }

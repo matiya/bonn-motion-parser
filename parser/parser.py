@@ -80,29 +80,31 @@ def allNodes(fileName):
   nodeContainer = [] #contains all the nodes
   for index in range(i):
     #initialize all the nodes to zero
-    node = np.zeros((len(nodes[index].split())/3,3))
+    node = np.zeros((len(nodes[index].split())/4,4))
     nodeContainer.append(node)
-
-
+  
+  print(node)
   indexOfNodes = 0
   listOfCoords = []
 
   for element in nodes:
     indexOfCoords = 0
-    #list of the coordenates of node "element" as [t0,x0,y0,t1...]
+    #list of the coordenates of node "element" as [t0,x0,y0,s0,t1...]
     listOfCoords = element.split()
-    i = 0 #line of an specific node, so: [tn,xn,yn]
+    i = 0 #line of an specific node, so: [tn,xn,yn,sn]
     while indexOfCoords != len(listOfCoords):
       #assigns the t (time) coordinate of node element
-      #if(indexOfNodes < 2):
-        #print("t: "+str(listOfCoords[indexOfCoords]))
-        #print("x: "+str(listOfCoords[indexOfCoords+1]))
-        #print("y: "+str(listOfCoords[indexOfCoords+2]))
-        #print("-------------------------------")
+##      if(indexOfNodes < 1):
+##        print("t: "+str(listOfCoords[indexOfCoords]))
+##        print("x: "+str(listOfCoords[indexOfCoords+1]))
+##        print("y: "+str(listOfCoords[indexOfCoords+2]))
+##        print("s: "+str(listOfCoords[indexOfCoords+3]))
+##        print("-------------------------------")
       nodeContainer[indexOfNodes][i][0] = listOfCoords[indexOfCoords]
       nodeContainer[indexOfNodes][i][1] = listOfCoords[indexOfCoords + 1]
       nodeContainer[indexOfNodes][i][2] = listOfCoords[indexOfCoords + 2]
-      indexOfCoords += 3
+      nodeContainer[indexOfNodes][i][3] = listOfCoords[indexOfCoords + 3]
+      indexOfCoords += 4
       i += 1
     indexOfNodes += 1
 

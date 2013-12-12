@@ -6,6 +6,16 @@
 
 #IncludeRegexTransform: 
 
+/home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/argvparser.h
+string
+-
+vector
+-
+map
+-
+list
+-
+
 /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/main.cpp
 iostream
 -
@@ -19,6 +29,8 @@ node.h
 /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/node.h
 parameters.h
 /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/parameters.h
+argvparser.h
+/home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/argvparser.h
 
 /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/node.h
 cmath
