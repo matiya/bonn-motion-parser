@@ -25,8 +25,15 @@ Name=mobilitygenerator
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
+Arguments=-n 6 -s 900 -S 90
 Configured from ProjectItem=mobilityGenerator,mobilitygenerator
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Build
+EnvironmentGroup=default
+Executable=file:///home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/
+External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=mobilityGenerator,mobilitygenerator
+Use External Terminal=true
 Working Directory=file:///home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/build/
 isExecutable=false
 
