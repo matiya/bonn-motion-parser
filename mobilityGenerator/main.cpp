@@ -171,31 +171,31 @@ int main(int argc, char **argv) {
       resultsFile << std::endl;
     }
 
-//     for(int j = 0; j < NUM_NODES*2; j++){ //circle through nodes, all of them
-//       for(int i = 0; i < firefighter[j].getPosition().size(); i+=4){ //circle through node's vectorPosition content
-// 	if(j<NUM_NODES){ //dogs
-// 	  if(i == 0){ //write initial position
-// 	    nsFile << "$node_(" << j << ") set X_ " << dog[j].getPosition().at(i+1) << std::endl;
-// 	    nsFile << "$node_(" << j << ") set Y_ " << dog[j].getPosition().at(i+2) << std::endl;
-// 	  }
-// 	  else{
-// 	    nsFile << "$ns_ at " << dog[j].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
-// 	      dog[j].getPosition().at(i+1) << " " << dog[j].getPosition().at(i+2) << " " << dog[j].getPosition().at(i+3) << "\"" <<std::endl;
-// 	  }
-// 	}
-// 	else{ //firefighters
-// 	  if(i == 0){ //write initial position
-// 	    nsFile << "$node_(" << j << ") set X_ " << firefighter[j-NUM_NODES].getPosition().at(i+1) << std::endl;
-// 	    nsFile << "$node_(" << j << ") set Y_ " << firefighter[j-NUM_NODES].getPosition().at(i+2) << std::endl;
-// 	  }
-// 	  else{
-// 	    nsFile << "$ns_ at " << firefighter[j-NUM_NODES].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
-// 	      firefighter[j-NUM_NODES].getPosition().at(i+1) << " " << firefighter[j-NUM_NODES].getPosition().at(i+2) << " " << 
-// 	      firefighter[j-NUM_NODES].getSpeed() << "\"" <<std::endl;
-// 	  }
-// 	}
-//       }
-//     }
+    for(int j = 0; j < NUM_NODES*2; j++){ //circle through nodes, all of them
+      for(int i = 0; i < dog[0].getPosition().size(); i+=4){ //circle through node's vectorPosition content
+	if(j < NUM_NODES){ //dogs
+	  if(i == 0){ //write initial position
+	    nsFile << "$node_(" << j << ") set X_ " << dog[j].getPosition().at(i+1) << std::endl;
+	    nsFile << "$node_(" << j << ") set Y_ " << dog[j].getPosition().at(i+2) << std::endl;
+	  }
+	  else{
+	    nsFile << "$ns_ at " << dog[j].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
+	      dog[j].getPosition().at(i+1) << " " << dog[j].getPosition().at(i+2) << " " << dog[j].getPosition().at(i+3) << "\"" <<std::endl;
+	  }
+	}
+	else{ //firefighters
+	  if(i == 0){ //write initial position
+	    nsFile << "$node_(" << j << ") set X_ " << firefighter[j-NUM_NODES].getPosition().at(i+1) << std::endl;
+	    nsFile << "$node_(" << j << ") set Y_ " << firefighter[j-NUM_NODES].getPosition().at(i+2) << std::endl;
+	  }
+	  else{
+	    nsFile << "$ns_ at " << firefighter[j-NUM_NODES].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
+	      firefighter[j-NUM_NODES].getPosition().at(i+1) << " " << firefighter[j-NUM_NODES].getPosition().at(i+2) << " " << 
+	      firefighter[j-NUM_NODES].getSpeed() << "\"" <<std::endl;
+	  }
+	}
+      }
+    }
 	
     resultsFile.close();
     nsFile.close();
