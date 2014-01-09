@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   int seedForGen;
   SEED == 0 ? seedForGen = rd() : seedForGen = SEED;
   std::mt19937 gen(seedForGen);
-  std::default_random_engine gen2(rd());
+  std::default_random_engine gen2(seedForGen);
   
   Node firefighter[NUM_NODES], dog[NUM_NODES]; 
   
@@ -72,14 +72,17 @@ int main(int argc, char **argv) {
 	prevPosXFF = *(firefighter[i].getPosition().end()-3);
 	prevPosXD = *(dog[i].getPosition().end()-3);
 	prevPosYD = *(dog[i].getPosition().end()-2);
-	dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
+	do{
+	  dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
+	}while(dogSpeed > DOG_SPEED + STD_DEVIATION);
       }
       catch(std::exception& e){
 	std::cout << "ERROR: accesing previous positions" << std::endl;
       }
 
       //update position of firefighters
-      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES, SPEED_NODES);
+      //TODO: Set random speed
+      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES, normal_integer(gen2, SPEED_NODES, STD_DEVIATION/2));
       
       //update position of dogs
       if(!dog[i].isAstray){
@@ -104,7 +107,7 @@ int main(int argc, char **argv) {
 	  }
 	}
 	else{
-	  dog[i].calcVersor(*(dog[i].getPosition().begin()+1)+DELTA_X*std::cos((prevPosYD + timeStep*SPEED_NODES)/8), 
+	  dog[i].calcVersor(*(dog[i].getPosition().begin()+1)+DELTA_X*std::cos((prevPosYD + timeStep*SPEED_NODES)/8), //the eight affects the freq of the sine
 			    prevPosYFF + timeStep*SPEED_NODES  + DELTA_Y); //tiempo
 	}
 	  
@@ -118,9 +121,12 @@ int main(int argc, char **argv) {
       else{ //isAstray == true
 	
 	if(!dog[i].isReturning){
-// 	  if(i==5){std::cout << "debug: " << std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
-// 		std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) << std::endl;}
-	  //std::cout << timeStep * DOG_SPEED + STD_DEVIATION << std::endl;}
+// 	  if(i==3){std::cout << "\tdebug: " << std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
+// 		std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) << std::endl;
+// 		std::cout << "speed " << dogSpeed << std::endl;
+// 		std::cout << "speed2 " << DOG_SPEED + STD_DEVIATION << "\n" << std::endl;
+// 	  }
+
 	  if(std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
 		std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) > timeStep * DOG_SPEED + STD_DEVIATION){
 	    dog[i].setPosition(time, 
@@ -145,9 +151,12 @@ int main(int argc, char **argv) {
 	  dog[i].setPosition(time, prevPosXD + *(dog[i].getVersor().begin())*timeStep*dogSpeed,
 			     prevPosYD + *(dog[i].getVersor().begin()+1)*timeStep*dogSpeed,
 			     dogSpeed);
-			
+// 	  if(i==3){std::cout << "\tdebug: " << std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
+// 		   std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) << std::endl;
+	  }
+
 	  if(std::sqrt(std::pow(prevPosXD - prevPosXFF,2) + 
-		       std::pow(prevPosYD - prevPosYFF,2)) < 2){
+		       std::pow(prevPosYD - prevPosYFF,2)) < 5){
 	    if(verbose)
 	      std::cout  << "@" << time << "s dog[" << i <<"] has returned to firefighter" << std::endl;
 	    dog[i].isAstray = false;

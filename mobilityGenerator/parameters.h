@@ -46,19 +46,19 @@ void askForParameters( int argc, char **argv){
     cmd.addUsage( "Usage: " );
     cmd.addUsage( "" );
     cmd.addUsage( " -h   --help\t\tprints this help ");
-    cmd.addUsage( " -f   --file		file name");
-    cmd.addUsage( " -n   --nodes		number of nodes");
-    cmd.addUsage( " -s   --samples		numbers of samples to be taken per node ");
-    cmd.addUsage( " -d   --duration         the time during which something continues (in seconds)");
-    cmd.addUsage( " -x   --xLimit           limit of the y coordinate (in meters) ");
-    cmd.addUsage( " -y   --yLimit  	        limit of the y coordinate (in meters) ");
-    cmd.addUsage( " -p   --probability	probability of a node of deviating (in per mil)");
-    cmd.addUsage( " -D   --deviation	standard deviation of the probability distribution wich controlls the dogs' speed");
-    cmd.addUsage( " -r   --speed	speed of the firefighters");
-    cmd.addUsage( " -X   --deltaX		amplitude of the sine wave in meters (in meters)");
-    cmd.addUsage( " -Y   --deltaY		offset between the firefighters and the dogs (in meters)");
-    cmd.addUsage( " -S   --seed		seed, if set to 0 it will be random");
-    cmd.addUsage( " -v   --verbose	displays debug info");
+    cmd.addUsage( " -f   --file\t\tfile name");
+    cmd.addUsage( " -n   --nodes\t\tnumber of nodes");
+    cmd.addUsage( " -s   --samples\t\tnumbers of samples to be taken per node ");
+    cmd.addUsage( " -d   --duration\thow long the simulation runs (in seconds)");
+    cmd.addUsage( " -x   --xLimit\t\tlimit of the y coordinate (in meters) ");
+    cmd.addUsage( " -y   --yLimit\t\tlimit of the y coordinate (in meters) ");
+    cmd.addUsage( " -p   --probability\tprobability of a node of deviating (in per mil)");
+    cmd.addUsage( " -D   --deviation\tstandard deviation of the probability distribution which controls the nodes' speed");
+    cmd.addUsage( " -r   --speed\t\tspeed of the firefighters");
+    cmd.addUsage( " -X   --deltaX\t\tamplitude of the sine wave in meters (in meters)");
+    cmd.addUsage( " -Y   --deltaY\t\toffset between the firefighters and the dogs (in meters)");
+    cmd.addUsage( " -S   --seed\t\tseed, if set to 0 it will be random");
+    cmd.addUsage( " -v   --verbose\t\tdisplays debug info");
     cmd.addUsage( "" );
 
     /* 4. SET THE OPTION STRINGS/CHARACTERS */
@@ -200,7 +200,7 @@ void askForParameters( int argc, char **argv){
      std::cout << "Average speed of dogs: " << DOG_SPEED << "m/s. Please check that this is a sane value." << endl;
      
     if( cmd.getValue( 'D' ) != NULL  || cmd.getValue( "deviation" ) != NULL  ){
-      DURATION = atof(cmd.getValue('D')); 
+      STD_DEVIATION = atof(cmd.getValue('D')); 
     }
     else{
       std::cout << "USING DEFAULT: deviation" << std::endl;
