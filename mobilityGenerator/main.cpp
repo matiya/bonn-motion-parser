@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   double time;
   double prevPosYFF, prevPosXFF, prevPosXD, prevPosYD, yPos;
   double yDeviation, xDeviation, xDir, yDir;
-  double dogSpeed;
+  double dogSpeed, ffSpeed;
   const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
   const double timeStep = (double) DURATION/SAMPLES_NUMBER;  
   std::ofstream resultsFile, nsFile;
@@ -64,7 +64,9 @@ int main(int argc, char **argv) {
   //update nodes positions
   while(time < DURATION){
     
-    time += timeStep;
+    time += timeStep;/*
+    std::cout << std::endl;
+    std::cout << time << std::endl;*/
     for(int i = 0; i<NUM_NODES; i++){      
       //load position at t-1 from the corresponding node's vectorPosition
       try{
@@ -80,9 +82,19 @@ int main(int argc, char **argv) {
 	std::cout << "ERROR: accesing previous positions" << std::endl;
       }
 
+      
+      /*
+    std::cout <<"dog: " << prevPosXD << ";" << prevPosYD << std::endl;
+    std::cout << "ff: " << prevPosXFF << ";" << prevPosYFF << std::endl;
+    */
       //update position of firefighters
       //TODO: Set random speed
-      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*SPEED_NODES, normal_integer(gen2, SPEED_NODES, STD_DEVIATION/2));
+      ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/20);
+      if(ffSpeed > 1.5){
+	std::cout << "[W] Firefighter " << i << " is running @" << ffSpeed << "m/s." << std::endl;
+      }
+      //std::cout << "ffspeed: " << ffSpeed << std::endl;
+      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*ffSpeed, ffSpeed);
       
       //update position of dogs
       if(!dog[i].isAstray){
@@ -93,10 +105,13 @@ int main(int argc, char **argv) {
 	    std::cout << "current pos: ("<< prevPosXD <<"," << prevPosYD << ")" << std::endl;
 	  }
 	  do{ //calculate new random position, making sure it doesn't go out of bounds
-	    yDeviation = random_integer(gen, 100) - 50;
-	    xDeviation = random_integer(gen, 100) - 50;
+	    yDeviation = random_integer(gen, 200) - 100; //FIXME: are these limits ok?
+	    xDeviation = random_integer(gen, 200) - 100;
 	  }while((yDeviation + prevPosYD) < 0 or (xDeviation + prevPosXD) < 0 or
-	    	 (yDeviation + prevPosYD) > FIELD_SIZE_Y or (xDeviation + prevPosXD) > FIELD_SIZE_X);
+	    	 (xDeviation + prevPosXD) > FIELD_SIZE_X);
+	  if((yDeviation + prevPosYD) > FIELD_SIZE_Y){ 
+	    std::cout << "[W] Y limit exceeded @ " << time << "s by node " << i << std::endl;
+	  }
 	  
 	  //calculate the versor which points in said direction
 	  dog[i].calcVersor(xDeviation + prevPosXD, yDeviation + prevPosYD);
@@ -153,7 +168,7 @@ int main(int argc, char **argv) {
 			     dogSpeed);
 // 	  if(i==3){std::cout << "\tdebug: " << std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
 // 		   std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) << std::endl;
-	  }
+// 	  }
 
 	  if(std::sqrt(std::pow(prevPosXD - prevPosXFF,2) + 
 		       std::pow(prevPosYD - prevPosYFF,2)) < 5){
@@ -200,7 +215,7 @@ int main(int argc, char **argv) {
 	  else{
 	    nsFile << "$ns_ at " << firefighter[j-NUM_NODES].getPosition().at(i) << " \"$node_(" << j << ") setdest " <<
 	      firefighter[j-NUM_NODES].getPosition().at(i+1) << " " << firefighter[j-NUM_NODES].getPosition().at(i+2) << " " << 
-	      firefighter[j-NUM_NODES].getSpeed() << "\"" <<std::endl;
+	      firefighter[j-NUM_NODES].getPosition().at(i+3) << "\"" <<std::endl;
 	  }
 	}
       }
