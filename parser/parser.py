@@ -201,6 +201,27 @@ def animate(i):
     line.set_data(x, y)
     return line,
 
+#line_ani.save('lines.mp4')
+
+def update_line(num, data, line):
+    line.set_data(data[...,:num])
+    return line,
+
+
+
+fig1 = plt.figure()
+
+data = np.random.rand(2, 25)
+l, = plt.plot([], [], 'r-')
+plt.xlim(0, 1)
+plt.ylim(0, 1)
+plt.xlabel('x')
+plt.title('test')
+line_ani = animation.FuncAnimation(fig1, update_line, 25, fargs=(data, l),
+    interval=50, blit=True)
+line_ani.save('lines.mp4')
+
+
 # call the animator.  blit=True means only re-draw the parts that have changed.
 def animated():
   anim = animation.FuncAnimation(fig, animate, init_func=init,                             frames=10, interval=2, blit=True)

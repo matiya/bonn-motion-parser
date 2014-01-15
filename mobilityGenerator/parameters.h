@@ -107,24 +107,24 @@ void askForParameters( int argc, char **argv){
       SAMPLES_NUMBER = atoi(cmd.getValue('s')); 
     }
     else{
-      std::cout << "REQUIRED: number of samples" << std::endl;
+      std::cout << "[E] REQUIRED: number of samples" << std::endl;
       std::cout << endl ;
       std::terminate();   
     }
     
     if( cmd.getValue( 'y' ) != NULL  || cmd.getValue( "yLimit" ) != NULL  ){
-      NUM_NODES = atoi(cmd.getValue('y')); 
+      FIELD_SIZE_Y = atoi(cmd.getValue('y')); 
     }
     else{
-      std::cout << "USING DEFAULT: yLimit" << std::endl;
+      std::cout << "[W] USING DEFAULT: yLimit = 1000m" << std::endl;
       FIELD_SIZE_Y = 1000;
     }
     
     if( cmd.getValue( 'x' ) != NULL  || cmd.getValue( "xLimit" ) != NULL  ){
-      SAMPLES_NUMBER = atoi(cmd.getValue('x')); 
+      FIELD_SIZE_X = atoi(cmd.getValue('x')); 
     }
     else{
-      std::cout << "USING DEFAULT: xLimit" << std::endl;
+      std::cout << "[W] USING DEFAULT: xLimit = 1000m" << std::endl;
       FIELD_SIZE_X = 1000;
     }
     
@@ -132,49 +132,49 @@ void askForParameters( int argc, char **argv){
       NUM_NODES = atoi(cmd.getValue('n')); 
     }
     else{
-      std::cout << "REQUIRED: number of nodes" << std::endl;
+      std::cout << "[E] REQUIRED: number of nodes" << std::endl;
       std::cout << endl ;
       std::terminate();
     }
    
     if( cmd.getValue( 'r' ) != NULL  || cmd.getValue( "speed" ) != NULL  ){
-      NUM_NODES = atof(cmd.getValue('r')); 
+      SPEED_NODES = atof(cmd.getValue('r')); 
     }
     else{
-      std::cout << "USING DEFAULT: speed" << std::endl;
-      SPEED_NODES = 0.4;      
+      std::cout << "[W] USING DEFAULT: speed = 1.4m/s" << std::endl;
+      SPEED_NODES = 1.4;      
     }
     
     if( cmd.getValue( 'd' ) != NULL  || cmd.getValue( "duration" ) != NULL  ){
       DURATION = atoi(cmd.getValue('d')); 
     }
     else{
-      std::cout << "USING DEFAULT: duration" << std::endl;
+      std::cout << "[W] USING DEFAULT: duration = 1000s" << std::endl;
       DURATION = 1000;     
     }
     
     if( cmd.getValue( 'p' ) != NULL  || cmd.getValue( "probability" ) != NULL  ){
-      DURATION = atoi(cmd.getValue('p')); 
+      PROB = atoi(cmd.getValue('p')); 
     }
     else{
-      std::cout << "USING DEFAULT: probability" << std::endl;
+      std::cout << "[W] USING DEFAULT: probability = 0.005" << std::endl;
       PROB = 5;     
     }
     
         
     if( cmd.getValue( 'X' ) != NULL  || cmd.getValue( "deltaX" ) != NULL  ){
-      DURATION = atoi(cmd.getValue('X')); 
+      DELTA_X = atoi(cmd.getValue('X')); 
     }
     else{
-      std::cout << "USING DEFAULT: deltaX" << std::endl;
       DELTA_X = FIELD_SIZE_X / (NUM_NODES * 2);     
+      std::cout << "[W] USING DEFAULT: deltaX = " << DELTA_X << std::endl;
     }
            
     if( cmd.getValue( 'Y' ) != NULL  || cmd.getValue( "deltaY" ) != NULL  ){
-      DURATION = atoi(cmd.getValue('Y')); 
+      DELTA_Y = atoi(cmd.getValue('Y')); 
     }
     else{
-      std::cout << "USING DEFAULT: deltaY" << std::endl;
+      std::cout << "[W] USING DEFAULT: deltaY = 5" << std::endl;
       DELTA_Y = 5;     
     }
     
@@ -182,7 +182,7 @@ void askForParameters( int argc, char **argv){
       FILE_NAME = (cmd.getValue('f')); 
     }
     else{
-      std::cout << "USING DEFAULT: file name" << std::endl;
+      std::cout << "[W] USING DEFAULT: file name \"scenario\"" << std::endl;
       FILE_NAME = "scenario" ;     
     }
     
@@ -190,15 +190,19 @@ void askForParameters( int argc, char **argv){
       SEED = atoi(cmd.getValue('S')); 
     }
     else{
-      std::cout << "no SEED specified, using random" << std::endl;
+      std::cout << "[W] no SEED specified, using random" << std::endl;
       SEED = 0;     
     }
 
      DOG_SPEED = (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI);//16PI is the distance travel by the ff while cos(y/8)
-     //TODO: DOG_SPEED*timeStep is the minumm sensibility for the return to firefighter
      //According to the internet an average speed would be 11 m/s, that is running. But do the dogs run or walk or gallop or?
-     std::cout << "Average speed of dogs: " << DOG_SPEED << "m/s. Please check that this is a sane value." << endl;
-     
+     std::cout << "[W] Average speed of dogs: " << DOG_SPEED << "m/s. \nPlease check that this is a sane value. \n" << 
+		   "The average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
+     if(DOG_SPEED > 13.6){
+      std::cout << "[E] Average speed of dogs surpasses the maximum of 13.6m/s" << 
+		    "\nDeacrease either deltaX or the speed." << std::endl;
+      std::terminate();   
+     }
     if( cmd.getValue( 'D' ) != NULL  || cmd.getValue( "deviation" ) != NULL  ){
       STD_DEVIATION = atof(cmd.getValue('D')); 
     }
@@ -208,11 +212,7 @@ void askForParameters( int argc, char **argv){
     }
      
      std::cout << endl ;
-
-    /* 8. DONE */
-    //delete opt;
  
 }
-
 
 #endif//PARAMETERS.H

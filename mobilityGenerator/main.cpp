@@ -88,13 +88,22 @@ int main(int argc, char **argv) {
     std::cout << "ff: " << prevPosXFF << ";" << prevPosYFF << std::endl;
     */
       //update position of firefighters
-      //TODO: Set random speed
-      ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/20);
-      if(ffSpeed > 1.5){
-	std::cout << "[W] Firefighter " << i << " is running @" << ffSpeed << "m/s." << std::endl;
+      ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10);
+      if(ffSpeed > 1.5*1.2){ 
+	std::cout << "[W] Firefighter " << i << " is moving at " << ffSpeed << "m/s.\nThis is higher than the average of 1.4m/s" << std::endl;
       }
-      //std::cout << "ffspeed: " << ffSpeed << std::endl;
-      firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*ffSpeed, ffSpeed);
+      //std::cout << "ffspeed: " << ffSpeed << std::endl; //[D]
+      //TODO: ff have a probability of straying away from the right path
+      //then select a random direction to move into wich lies ahead an in the most possible acute angle
+      if(random_integer(gen, 1000) < PROB){
+	do{ //calculate new random position, making sure it doesn't go out of bounds
+	    xDeviation = random_integer(gen, 5) - 2.5;
+	  }while((xDeviation + prevPosXFF) < 0 or (xDeviation + prevPosXFF) > FIELD_SIZE_X);
+	firefighter[i].setPosition(time, prevPosXFF + xDeviation, prevPosYFF + timeStep*ffSpeed*0.8, ffSpeed);
+      }
+      else{
+	firefighter[i].setPosition(time, prevPosXFF, prevPosYFF + timeStep*ffSpeed, ffSpeed);
+      }
       
       //update position of dogs
       if(!dog[i].isAstray){
