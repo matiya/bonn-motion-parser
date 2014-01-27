@@ -6,37 +6,46 @@
 //TODO: error catching in the setter functions
 
 class Node {
-    std::vector<double> vectorPosition;
-    std::vector<double> nextPosition = {0, 0}; //C++11
-    std::vector<double> versor = {0, 0}; //C++11;
-    double x, y, xDir, yDir;
-    double speed;
+  
+private:
+  std::vector<double> vectorPosition;
+  std::vector<double> nextPosition = {0, 0}; //C++11
+  std::vector<double> versor = {0, 0}; //C++11;
+  double x = 0, y = 0, xDir = 0, yDir = 0;
+//     double speed = 0;
     
-  public:
-    bool isAstray = false;
-    bool isReturning = false;
-    Node();
-    void setPosition (double,double, double, double);
-    void setVersor (double,double);
-    void calcVersor ( double, double);
-    void setSpeed(double);
-    const std::vector<double> getPosition();
-    std::vector<double> getNextPosition();
-    const std::vector<double> getVersor();
-    const double getSpeed();
+public:
+  bool isAstray = false;
+  bool isReturning = false;
+  Node();
+  void setPosition (double, double, double, double);
+  void setVersor (double, double);
+  void calcVersor ( double, double);
+//     void setSpeed(double);
+  const std::vector<double> getPosition();
+  std::vector<double> getNextPosition();
+  const std::vector<double> getVersor();
+//     const double getSpeed();
 };
 
 Node::Node ()
 {
-  //speed = SPEED_NODES;
+   std::cout << "vecor size: " << vectorPosition.size()<< std::endl;
+   
 }
 
 
 void Node::setPosition (double x, double y, double t, double s) {
+  std::cout << "b1" << std::endl; 
+  std::cout << vectorPosition.size() << std::endl;
   vectorPosition.push_back(x);
+//       std::cout << "b1" << std::endl;  
   vectorPosition.push_back(y);
+//       std::cout << "b2" << std::endl;  
   vectorPosition.push_back(t);
+//       std::cout << "b3" << std::endl;  
   vectorPosition.push_back(s);
+      //std::cout << "b4" << std::endl;  
 }
 
 void Node::calcVersor ( double goalPosX, double goalPosY){
@@ -53,10 +62,10 @@ void Node::setVersor (double a,double b){
   *(versor.begin()) = a;
   *(versor.begin() +1) = b;
 }
-
+/*
 void Node::setSpeed(double s){
   speed = s;
-}
+}*/
 
 const std::vector<double> Node::getPosition(){
   return vectorPosition;
@@ -69,10 +78,10 @@ std::vector<double> Node::getNextPosition(){
 const std::vector<double> Node::getVersor(){
   return versor;
 }
-
+/*
 const double Node::getSpeed(){
   return speed;
-}
+}*/
 
 
 #endif // NODE_H

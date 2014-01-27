@@ -24,15 +24,55 @@
 //#define PROB	5 //in per mil
 //#define SEED 0//to make it truly random set to 0
 #include "anyoption.cpp" //change to .h
+#include <vector>
 
 unsigned long SAMPLES_NUMBER, DELTA_X, DELTA_Y, DURATION, SEED, FIELD_SIZE_X, FIELD_SIZE_Y;
 unsigned int PROB, NUM_NODES;
 double STD_DEVIATION, SPEED_NODES, DOG_SPEED;
 bool verbose;
-std::string FILE_NAME;
+std::string FILE_NAME, OBSTACLES_FILE;
 
-void askForParameters( int argc, char **argv){
+//void readObstaclesFile(std::string);
+
+std::vector<float> readObstaclesFile(std::string obstaclesFile){
+  
+
+  std::ifstream f(obstaclesFile);
+  std::string asd;
+  std::vector<float> segment;
+  if(!f.good()){
+    std::cout << "[E] Obstacle file does not exist. " << std::endl;
+    std::terminate();
+  }
+  else{
+    if(f.is_open()){
+      while ( std::getline(f,asd, ',') )
+      {
+	segment.push_back(std::stof(asd.c_str()));
+      }
+//       for ( int i = 0; i < segment.size() ; i++){
+// 	std::cout << segment.at(i) << std::endl;
+// 	//std::cout << segment.size() << " : "<< (segment.size()) % 4 << std::endl;
+//       }
+      if( (segment.size() % 4) != 0)
+      {
+	std::cout << "[E] Incorrect format of obstacles." << std::endl;
+	std::terminate();
+      }
+      std::cout << "[I] Read "<< segment.size()/4 << " obstacles. "<<std::endl;    
+    }
+    else{
+      std::cout <<"[E] Could not open obstacle file: " << obstaclesFile << "." << std::endl;
+      std::terminate();
+    }
+    f.close();
+  }
+  return segment;
+}
+
+std::vector<float> askForParameters( int argc, char **argv){
  
+    std::vector<float> segment;
     /* 1. CREATE AN OBJECT */
     //AnyOption *opt = new AnyOption();
     AnyOption cmd;
@@ -58,6 +98,7 @@ void askForParameters( int argc, char **argv){
     cmd.addUsage( " -X   --deltaX\t\tamplitude of the sine wave in meters (in meters)");
     cmd.addUsage( " -Y   --deltaY\t\toffset between the firefighters and the dogs (in meters)");
     cmd.addUsage( " -S   --seed\t\tseed, if set to 0 it will be random");
+    cmd.addUsage( " -o   --obstacles\t\tobstacles file name");
     cmd.addUsage( " -v   --verbose\t\tdisplays debug info");
     cmd.addUsage( "" );
 
@@ -76,6 +117,7 @@ void askForParameters( int argc, char **argv){
     cmd.setOption(  "deltaX", 'X' ); 
     cmd.setOption(  "deltaY", 'Y' ); 
     cmd.setOption(  "seed", 'S' ); 
+    cmd.setOption(  "obstacles", 'o' ); 
     cmd.setFlag(  "verbose", 'v' );   /* a flag (takes no argument), supporting long and short form */ 
     
     /* for options that will be checked only on the command and line not in option/resource file */
@@ -93,7 +135,7 @@ void askForParameters( int argc, char **argv){
 
     if( ! cmd.hasOptions()) { /* print usage if no options */
 	    cmd.printUsage();
-	    return;
+	    std::terminate();   
     }
 
     /* 6. GET THE VALUES */
@@ -186,6 +228,16 @@ void askForParameters( int argc, char **argv){
       FILE_NAME = "scenario" ;     
     }
     
+    
+    if( cmd.getValue( 'o' ) != NULL  || cmd.getValue( "obstacles" ) != NULL  ){
+      OBSTACLES_FILE = (cmd.getValue('o')); 
+      segment = readObstaclesFile(OBSTACLES_FILE);
+      
+    }
+    else{
+      std::cout << "[W] no obstacles defined" << std::endl;
+    }
+    
     if( cmd.getValue( 'S' ) != NULL  || cmd.getValue( "seed" ) != NULL  ){
       SEED = atoi(cmd.getValue('S')); 
     }
@@ -196,8 +248,8 @@ void askForParameters( int argc, char **argv){
 
      DOG_SPEED = (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI);//16PI is the distance travel by the ff while cos(y/8)
      //According to the internet an average speed would be 11 m/s, that is running. But do the dogs run or walk or gallop or?
-     std::cout << "[W] Average speed of dogs: " << DOG_SPEED << "m/s. \nPlease check that this is a sane value. \n" << 
-		   "The average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
+     std::cout << "[W] Average speed of dogs: " << DOG_SPEED << "m/s. \n\tPlease check that this is a sane value. \n" << 
+		   "\tThe average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
      if(DOG_SPEED > 13.6){
       std::cout << "[E] Average speed of dogs surpasses the maximum of 13.6m/s" << 
 		    "\nDeacrease either deltaX or the speed." << std::endl;
@@ -212,7 +264,7 @@ void askForParameters( int argc, char **argv){
     }
      
      std::cout << endl ;
- 
+    return segment;
 }
 
 #endif//PARAMETERS.H

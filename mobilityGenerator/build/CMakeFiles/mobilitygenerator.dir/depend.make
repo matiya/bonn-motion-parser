@@ -5,5 +5,6 @@ CMakeFiles/mobilitygenerator.dir/main.o: ../anyoption.cpp
 CMakeFiles/mobilitygenerator.dir/main.o: ../anyoption.h
 CMakeFiles/mobilitygenerator.dir/main.o: ../main.cpp
 CMakeFiles/mobilitygenerator.dir/main.o: ../node.h
+CMakeFiles/mobilitygenerator.dir/main.o: ../obstacle.h
 CMakeFiles/mobilitygenerator.dir/main.o: ../parameters.h
 

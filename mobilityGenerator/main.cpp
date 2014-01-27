@@ -1,8 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <sys/stat.h>
 #include <random>
+#include <sstream>
+#include <string>
 #include "node.h" 
+#include "obstacle.h" 
 #include "parameters.h"
 
 
@@ -19,20 +23,20 @@ double normal_integer(std::default_random_engine& generator, double mean, double
 }
 
 
-
 int main(int argc, char **argv) {
   
-  askForParameters(argc, argv); 
   
-  int k=0;
-  double time;
-  double prevPosYFF, prevPosXFF, prevPosXD, prevPosYD, yPos;
-  double yDeviation, xDeviation, xDir, yDir;
-  double dogSpeed, ffSpeed;
+  int k =0 ;
+  std::vector<float> segment = askForParameters(argc, argv); 
+  int obstaclesNumber = segment.size()/4;
+  double time = 0;
+  double prevPosYFF = 0, prevPosXFF = 0, prevPosXD = 0, prevPosYD = 0;
+  double yDeviation = 0, xDeviation = 0, xDir = 0, yDir = 0;
+  double dogSpeed = 0, ffSpeed = 0;
   const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
   const double timeStep = (double) DURATION/SAMPLES_NUMBER;  
   std::ofstream resultsFile, nsFile;
-  std::ifstream f(FILE_NAME);
+  std::ifstream f(FILE_NAME + std::to_string(k));
   
   //check if file exists already
   while (f.good()) {
@@ -40,9 +44,6 @@ int main(int argc, char **argv) {
     f.close();
     f.open(FILE_NAME + std::to_string(k));
   }
-  
-  nsFile.open("ns_" + FILE_NAME + std::to_string(k), std::ofstream::out | std::ofstream::trunc); //to feed into ns-3
-  resultsFile.open(FILE_NAME + std::to_string(k), std::ofstream::out | std::ofstream::trunc); //for debugging purposes
 
   std::random_device rd;
   
@@ -51,19 +52,32 @@ int main(int argc, char **argv) {
   std::mt19937 gen(seedForGen);
   std::default_random_engine gen2(seedForGen);
   
-  Node firefighter[NUM_NODES], dog[NUM_NODES]; 
+  Node dog[NUM_NODES]; 
+  Node firefighter[NUM_NODES];
   
+  Obstacle obstacle[obstaclesNumber];
+
+//   initialize obstacles
+  if(segment.size() != 0)
+  {
+    int i = 0;
+    for ( int j = 0; j < obstaclesNumber ; j++){
+      obstacle[j].setVertices(segment.at(i),segment.at(i+1),segment.at(i+2),segment.at(i+3)) ;
+      i+=4;
+    }
+  }
+  segment.clear();
+  segment.shrink_to_fit();
   //set the intial positions and speed
   for(int i = 0; i < NUM_NODES ; i++){
-    firefighter[i].setPosition(0, DELTA_X + i*rfDist, 0, SPEED_NODES);
-    firefighter[i].setSpeed(SPEED_NODES);
     dog[i].setPosition(0, DELTA_X + i*rfDist, 0, SPEED_NODES);
-    dog[i].setSpeed(DOG_SPEED);
+    firefighter[i].setPosition(0, DELTA_X + i*rfDist, 0, SPEED_NODES);
+    
   }
-  std::cout << "timestep: " << timeStep << std::endl;
+  std::cout << "[I] Timestep: " << timeStep << std::endl;
+  
   //update nodes positions
   while(time < DURATION){
-    
     time += timeStep;/*
     std::cout << std::endl;
     std::cout << time << std::endl;*/
@@ -89,12 +103,15 @@ int main(int argc, char **argv) {
     */
       //update position of firefighters
       ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10);
-      if(ffSpeed > 1.5*1.2){ 
+      if(obstaclesNumber != 0)
+      {
+	for(int i = 0; i < obstaclesNumber ; i++){
+	  obstacle[i].getDistanceToPoint(prevPosXFF, prevPosYFF);
+	}
+      }
+      if(ffSpeed > 1.5*1.2){ //20% over average walking speed
 	std::cout << "[W] Firefighter " << i << " is moving at " << ffSpeed << "m/s.\nThis is higher than the average of 1.4m/s" << std::endl;
       }
-      //std::cout << "ffspeed: " << ffSpeed << std::endl; //[D]
-      //TODO: ff have a probability of straying away from the right path
-      //then select a random direction to move into wich lies ahead an in the most possible acute angle
       if(random_integer(gen, 1000) < PROB){
 	do{ //calculate new random position, making sure it doesn't go out of bounds
 	    xDeviation = random_integer(gen, 5) - 2.5;
@@ -193,6 +210,8 @@ int main(int argc, char **argv) {
   }
   
   //writing output to a file
+  nsFile.open("ns_" + FILE_NAME + std::to_string(k), std::ofstream::out | std::ofstream::trunc); //to feed into ns-3
+  resultsFile.open(FILE_NAME + std::to_string(k), std::ofstream::out | std::ofstream::trunc); //for debugging purposes
     for(int j = 0; j < NUM_NODES; j++){ //circle through nodes
       for(int i = 0; i < firefighter[j].getPosition().size(); i++){ //circle through node's vectorPosition content
 	resultsFile << firefighter[j].getPosition().at(i) << " ";

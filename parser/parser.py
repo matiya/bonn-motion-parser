@@ -19,12 +19,12 @@ def main(argv):
   try:
       opts, args = getopt.getopt(argv,"oan")
   except getopt.GetoptError:
-      print "Usage:"
-      print 'parser.py [-OPTION] <file>'
+      print("Usage:")
+      print("parser.py [-OPTION] <file>")
       sys.exit(2)
   for opt, arg in opts:
       if opt == '-o':
-         print 'plotting just the scatter plot of one node'
+         print("plotting just the scatter plot of one node")
          oneNode(argv)
          sys.exit()
       elif opt == '-a':
@@ -82,7 +82,7 @@ def allNodes(fileName):
     #initialize all the nodes to zero
     node = np.zeros((len(nodes[index].split())/4,4))
     nodeContainer.append(node)
-  
+
   print(node)
   indexOfNodes = 0
   listOfCoords = []
