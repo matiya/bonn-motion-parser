@@ -27,7 +27,7 @@
 #include <vector>
 
 unsigned long SAMPLES_NUMBER, DELTA_X, DELTA_Y, DURATION, SEED, FIELD_SIZE_X, FIELD_SIZE_Y;
-unsigned int PROB, NUM_NODES;
+unsigned int PROB, NUM_NODES, LOS;
 double STD_DEVIATION, SPEED_NODES, DOG_SPEED;
 bool verbose;
 std::string FILE_NAME, OBSTACLES_FILE;
@@ -97,6 +97,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.addUsage( " -r   --speed\t\tspeed of the firefighters");
     cmd.addUsage( " -X   --deltaX\t\tamplitude of the sine wave in meters (in meters)");
     cmd.addUsage( " -Y   --deltaY\t\toffset between the firefighters and the dogs (in meters)");
+    cmd.addUsage( " -l   --los\t\tlength of line of sight of the nodes (in meters)");
     cmd.addUsage( " -S   --seed\t\tseed, if set to 0 it will be random");
     cmd.addUsage( " -o   --obstacles\t\tobstacles file name");
     cmd.addUsage( " -v   --verbose\t\tdisplays debug info");
@@ -116,6 +117,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.setOption(  "deviation", 'D' ); 
     cmd.setOption(  "deltaX", 'X' ); 
     cmd.setOption(  "deltaY", 'Y' ); 
+    cmd.setOption(  "los", 'l' ); 
     cmd.setOption(  "seed", 'S' ); 
     cmd.setOption(  "obstacles", 'o' ); 
     cmd.setFlag(  "verbose", 'v' );   /* a flag (takes no argument), supporting long and short form */ 
@@ -218,6 +220,15 @@ std::vector<float> askForParameters( int argc, char **argv){
     else{
       std::cout << "[W] USING DEFAULT: deltaY = 5" << std::endl;
       DELTA_Y = 5;     
+    }
+    
+    if( cmd.getValue( 'l' ) != NULL  || cmd.getValue( "los" ) != NULL  ){
+//       FIXME: Get this value from map info
+      LOS = atoi(cmd.getValue('l')); 
+    }
+    else{
+      std::cout << "[W] USING DEFAULT: LoS = 80" << std::endl;
+      LOS = 80;     
     }
     
     if( cmd.getValue( 'f' ) != NULL  || cmd.getValue( "file" ) != NULL  ){

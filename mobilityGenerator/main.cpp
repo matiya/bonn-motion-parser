@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
   double prevPosYFF = 0, prevPosXFF = 0, prevPosXD = 0, prevPosYD = 0;
   double yDeviation = 0, xDeviation = 0, xDir = 0, yDir = 0;
   double dogSpeed = 0, ffSpeed = 0;
+  Obstacle::linePointParameters distanceToPoint;
   const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
   const double timeStep = (double) DURATION/SAMPLES_NUMBER;  
   std::ofstream resultsFile, nsFile;
@@ -66,8 +67,6 @@ int main(int argc, char **argv) {
       i+=4;
     }
   }
-  segment.clear();
-  segment.shrink_to_fit();
   //set the intial positions and speed
   for(int i = 0; i < NUM_NODES ; i++){
     dog[i].setPosition(0, DELTA_X + i*rfDist, 0, SPEED_NODES);
@@ -78,11 +77,10 @@ int main(int argc, char **argv) {
   
   //update nodes positions
   while(time < DURATION){
-    time += timeStep;/*
-    std::cout << std::endl;
-    std::cout << time << std::endl;*/
+    time += timeStep;
+    
+    //load position at t-1 from the corresponding node's vectorPosition
     for(int i = 0; i<NUM_NODES; i++){      
-      //load position at t-1 from the corresponding node's vectorPosition
       try{
 	prevPosYFF = *(firefighter[i].getPosition().end()-2);
 	prevPosXFF = *(firefighter[i].getPosition().end()-3);
@@ -101,14 +99,21 @@ int main(int argc, char **argv) {
     std::cout <<"dog: " << prevPosXD << ";" << prevPosYD << std::endl;
     std::cout << "ff: " << prevPosXFF << ";" << prevPosYFF << std::endl;
     */
-      //update position of firefighters
-      ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10);
+//    calculate distance from node to obstacle and set flag to avoid in case it lies within line of sight and directly ahead
       if(obstaclesNumber != 0)
       {
-	for(int i = 0; i < obstaclesNumber ; i++){
-	  obstacle[i].getDistanceToPoint(prevPosXFF, prevPosYFF);
+	for(int j = 0; j < obstaclesNumber ; j++){
+	  distanceToPoint = obstacle[j].getDistanceToPoint(prevPosXFF, prevPosYFF);
+	  if(distanceToPoint.distance < LOS  && distanceToPoint.distance > 0 && distanceToPoint.r > 0 && distanceToPoint.r < 1){ //distance within line of sight and ahead of node
+	    std::cout << "[W](@ "<<time << "s)  Node "<< i << " wich is in "<< (int)prevPosXFF << "," << (int)prevPosYFF << " will collide with obstacle " 
+		      << j << " in " << (int)distanceToPoint.px << "," 
+		      << (int)distanceToPoint.py << " given distance: " << distanceToPoint.distance <<  std::endl;
+	  }
 	}
       }
+      
+      //update position of firefighters
+      ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10);
       if(ffSpeed > 1.5*1.2){ //20% over average walking speed
 	std::cout << "[W] Firefighter " << i << " is moving at " << ffSpeed << "m/s.\nThis is higher than the average of 1.4m/s" << std::endl;
       }

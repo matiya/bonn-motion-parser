@@ -30,22 +30,16 @@ public:
 
 Node::Node ()
 {
-   std::cout << "vecor size: " << vectorPosition.size()<< std::endl;
+//    std::cout << "vecor size: " << vectorPosition.size()<< std::endl;
    
 }
 
 
 void Node::setPosition (double x, double y, double t, double s) {
-  std::cout << "b1" << std::endl; 
-  std::cout << vectorPosition.size() << std::endl;
   vectorPosition.push_back(x);
-//       std::cout << "b1" << std::endl;  
   vectorPosition.push_back(y);
-//       std::cout << "b2" << std::endl;  
   vectorPosition.push_back(t);
-//       std::cout << "b3" << std::endl;  
   vectorPosition.push_back(s);
-      //std::cout << "b4" << std::endl;  
 }
 
 void Node::calcVersor ( double goalPosX, double goalPosY){
