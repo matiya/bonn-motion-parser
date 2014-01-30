@@ -108,6 +108,7 @@ int main(int argc, char **argv) {
 	    std::cout << "[W](@ "<<time << "s)  Node "<< i << " wich is in "<< (int)prevPosXFF << "," << (int)prevPosYFF << " will collide with obstacle " 
 		      << j << " in " << (int)distanceToPoint.px << "," 
 		      << (int)distanceToPoint.py << " given distance: " << distanceToPoint.distance <<  std::endl;
+	    obstacle[j].returnClosestVertex(prevPosXFF, prevPosYFF);
 	  }
 	}
       }
