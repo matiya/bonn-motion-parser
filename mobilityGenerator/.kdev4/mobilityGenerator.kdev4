@@ -25,7 +25,7 @@ Name=mobilitygenerator
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
-Arguments=-n 6 -s 900 -S 90
+Arguments=-s 900 -n 6 -d 920 --seed 94  -f borrar -D 1 -p 10 -X\n40 --obstacles obs\n
 Configured from ProjectItem=mobilityGenerator,mobilitygenerator
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Build

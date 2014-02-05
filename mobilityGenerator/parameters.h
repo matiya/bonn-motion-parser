@@ -48,6 +48,7 @@ std::vector<float> readObstaclesFile(std::string obstaclesFile){
     if(f.is_open()){
       while ( std::getline(f,asd, ',') )
       {
+	std::cout << asd << "\t" << std::stof(asd.c_str()) << std::endl;
 	segment.push_back(std::stof(asd.c_str()));
       }
 //       for ( int i = 0; i < segment.size() ; i++){
@@ -257,10 +258,10 @@ std::vector<float> askForParameters( int argc, char **argv){
       SEED = 0;     
     }
 
-     DOG_SPEED = (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI);//16PI is the distance travel by the ff while cos(y/8)
-     //According to the internet an average speed would be 11 m/s, that is running. But do the dogs run or walk or gallop or?
-     std::cout << "[W] Average speed of dogs: " << DOG_SPEED << "m/s. \n\tPlease check that this is a sane value. \n" << 
-		   "\tThe average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
+     DOG_SPEED = (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI);//FIXME: 16PI is the distance travel by the ff while cos(y/8)
+     //FIXME: According to the internet an average speed would be 11 m/s, that is running. But do the dogs run or walk or gallop or?
+     std::cout << "[W] Average speed of dogs: " << DOG_SPEED << "m/s. \n    Please check that this is a sane value. \n" << 
+		   "    The average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
      if(DOG_SPEED > 13.6){
       std::cout << "[E] Average speed of dogs surpasses the maximum of 13.6m/s" << 
 		    "\nDeacrease either deltaX or the speed." << std::endl;

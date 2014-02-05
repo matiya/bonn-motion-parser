@@ -9,7 +9,7 @@ class Node {
   
 private:
   std::vector<double> vectorPosition;
-  std::vector<double> nextPosition = {0, 0}; //C++11
+  std::vector<double> nextPosition = {0, 0};
   std::vector<double> versor = {0, 0}; //C++11;
   double x = 0, y = 0, xDir = 0, yDir = 0;
 //     double speed = 0;
@@ -17,15 +17,16 @@ private:
 public:
   bool isAstray = false;
   bool isReturning = false;
+  bool isAvoidingObstacle = false;
   Node();
   void setPosition (double, double, double, double);
   void setVersor (double, double);
   void calcVersor ( double, double);
-//     void setSpeed(double);
   const std::vector<double> getPosition();
   std::vector<double> getNextPosition();
   const std::vector<double> getVersor();
-//     const double getSpeed();
+  std::vector<double> previousPosition = {0, 0};//C++11
+
 };
 
 Node::Node ()
@@ -56,10 +57,6 @@ void Node::setVersor (double a,double b){
   *(versor.begin()) = a;
   *(versor.begin() +1) = b;
 }
-/*
-void Node::setSpeed(double s){
-  speed = s;
-}*/
 
 const std::vector<double> Node::getPosition(){
   return vectorPosition;
