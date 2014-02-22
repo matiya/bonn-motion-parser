@@ -1,6 +1,6 @@
 project(mobilitygenerator)
 
-add_executable(mobilitygenerator main.cpp)
+add_executable(mobilitygenerator main.cpp node.cc obstacle.cc)
 
 install(TARGETS mobilitygenerator RUNTIME DESTINATION bin)
 

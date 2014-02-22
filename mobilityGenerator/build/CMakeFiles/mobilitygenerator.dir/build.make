@@ -75,14 +75,64 @@ CMakeFiles/mobilitygenerator.dir/main.o.provides: CMakeFiles/mobilitygenerator.d
 
 CMakeFiles/mobilitygenerator.dir/main.o.provides.build: CMakeFiles/mobilitygenerator.dir/main.o
 
+CMakeFiles/mobilitygenerator.dir/node.o: CMakeFiles/mobilitygenerator.dir/flags.make
+CMakeFiles/mobilitygenerator.dir/node.o: ../node.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/mobilitygenerator.dir/node.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/mobilitygenerator.dir/node.o -c /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/node.cc
+
+CMakeFiles/mobilitygenerator.dir/node.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mobilitygenerator.dir/node.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/node.cc > CMakeFiles/mobilitygenerator.dir/node.i
+
+CMakeFiles/mobilitygenerator.dir/node.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mobilitygenerator.dir/node.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/node.cc -o CMakeFiles/mobilitygenerator.dir/node.s
+
+CMakeFiles/mobilitygenerator.dir/node.o.requires:
+.PHONY : CMakeFiles/mobilitygenerator.dir/node.o.requires
+
+CMakeFiles/mobilitygenerator.dir/node.o.provides: CMakeFiles/mobilitygenerator.dir/node.o.requires
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.o.provides.build
+.PHONY : CMakeFiles/mobilitygenerator.dir/node.o.provides
+
+CMakeFiles/mobilitygenerator.dir/node.o.provides.build: CMakeFiles/mobilitygenerator.dir/node.o
+
+CMakeFiles/mobilitygenerator.dir/obstacle.o: CMakeFiles/mobilitygenerator.dir/flags.make
+CMakeFiles/mobilitygenerator.dir/obstacle.o: ../obstacle.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/mobilitygenerator.dir/obstacle.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/mobilitygenerator.dir/obstacle.o -c /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/obstacle.cc
+
+CMakeFiles/mobilitygenerator.dir/obstacle.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mobilitygenerator.dir/obstacle.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/obstacle.cc > CMakeFiles/mobilitygenerator.dir/obstacle.i
+
+CMakeFiles/mobilitygenerator.dir/obstacle.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mobilitygenerator.dir/obstacle.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/default/workspace/repos/python/bonn-motion-parser/mobilityGenerator/obstacle.cc -o CMakeFiles/mobilitygenerator.dir/obstacle.s
+
+CMakeFiles/mobilitygenerator.dir/obstacle.o.requires:
+.PHONY : CMakeFiles/mobilitygenerator.dir/obstacle.o.requires
+
+CMakeFiles/mobilitygenerator.dir/obstacle.o.provides: CMakeFiles/mobilitygenerator.dir/obstacle.o.requires
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.o.provides.build
+.PHONY : CMakeFiles/mobilitygenerator.dir/obstacle.o.provides
+
+CMakeFiles/mobilitygenerator.dir/obstacle.o.provides.build: CMakeFiles/mobilitygenerator.dir/obstacle.o
+
 # Object files for target mobilitygenerator
 mobilitygenerator_OBJECTS = \
-"CMakeFiles/mobilitygenerator.dir/main.o"
+"CMakeFiles/mobilitygenerator.dir/main.o" \
+"CMakeFiles/mobilitygenerator.dir/node.o" \
+"CMakeFiles/mobilitygenerator.dir/obstacle.o"
 
 # External object files for target mobilitygenerator
 mobilitygenerator_EXTERNAL_OBJECTS =
 
 mobilitygenerator: CMakeFiles/mobilitygenerator.dir/main.o
+mobilitygenerator: CMakeFiles/mobilitygenerator.dir/node.o
+mobilitygenerator: CMakeFiles/mobilitygenerator.dir/obstacle.o
 mobilitygenerator: CMakeFiles/mobilitygenerator.dir/build.make
 mobilitygenerator: CMakeFiles/mobilitygenerator.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable mobilitygenerator"
@@ -93,6 +143,8 @@ CMakeFiles/mobilitygenerator.dir/build: mobilitygenerator
 .PHONY : CMakeFiles/mobilitygenerator.dir/build
 
 CMakeFiles/mobilitygenerator.dir/requires: CMakeFiles/mobilitygenerator.dir/main.o.requires
+CMakeFiles/mobilitygenerator.dir/requires: CMakeFiles/mobilitygenerator.dir/node.o.requires
+CMakeFiles/mobilitygenerator.dir/requires: CMakeFiles/mobilitygenerator.dir/obstacle.o.requires
 .PHONY : CMakeFiles/mobilitygenerator.dir/requires
 
 CMakeFiles/mobilitygenerator.dir/clean:

@@ -1,5 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/mobilitygenerator.dir/main.o"
+  "CMakeFiles/mobilitygenerator.dir/node.o"
+  "CMakeFiles/mobilitygenerator.dir/obstacle.o"
   "mobilitygenerator.pdb"
   "mobilitygenerator"
 )

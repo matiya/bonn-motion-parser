@@ -170,6 +170,36 @@ main.s:
 	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/main.s
 .PHONY : main.s
 
+# target to build an object file
+node.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.o
+.PHONY : node.o
+
+# target to preprocess a source file
+node.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.i
+.PHONY : node.i
+
+# target to generate assembly for a file
+node.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.s
+.PHONY : node.s
+
+# target to build an object file
+obstacle.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.o
+.PHONY : obstacle.o
+
+# target to preprocess a source file
+obstacle.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.i
+.PHONY : obstacle.i
+
+# target to generate assembly for a file
+obstacle.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.s
+.PHONY : obstacle.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,6 +216,12 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... node.o"
+	@echo "... node.i"
+	@echo "... node.s"
+	@echo "... obstacle.o"
+	@echo "... obstacle.i"
+	@echo "... obstacle.s"
 .PHONY : help
 
 

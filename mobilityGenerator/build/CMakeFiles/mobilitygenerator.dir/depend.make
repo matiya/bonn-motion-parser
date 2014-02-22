@@ -8,3 +8,9 @@ CMakeFiles/mobilitygenerator.dir/main.o: ../node.h
 CMakeFiles/mobilitygenerator.dir/main.o: ../obstacle.h
 CMakeFiles/mobilitygenerator.dir/main.o: ../parameters.h
 
+CMakeFiles/mobilitygenerator.dir/node.o: ../node.cc
+CMakeFiles/mobilitygenerator.dir/node.o: ../node.h
+
+CMakeFiles/mobilitygenerator.dir/obstacle.o: ../obstacle.cc
+CMakeFiles/mobilitygenerator.dir/obstacle.o: ../obstacle.h
+

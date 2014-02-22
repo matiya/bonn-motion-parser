@@ -1,1 +1,1 @@
-/usr/bin/c++   -g    CMakeFiles/mobilitygenerator.dir/main.o  -o mobilitygenerator -rdynamic 
+/usr/bin/c++   -g    CMakeFiles/mobilitygenerator.dir/main.o CMakeFiles/mobilitygenerator.dir/node.o CMakeFiles/mobilitygenerator.dir/obstacle.o  -o mobilitygenerator -rdynamic 
