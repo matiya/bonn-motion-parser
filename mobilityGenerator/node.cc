@@ -1,3 +1,10 @@
+/**
+ * @file node.cc
+ * @author Matias Siracusa
+ * @version 
+ * @brief node class
+ * @date 22.02.2014
+*/
 #include "node.h"
 
 
@@ -16,8 +23,8 @@ void Node::setPosition (double x, double y, double t, double s) {
 
 void Node::calcVersor ( double goalPosX, double goalPosY){
   /*calculate the versor which points in the direction goalPosition - currentPosition*/
-  xDir = goalPosX - *(vectorPosition.end()-3);
-  yDir = goalPosY - *(vectorPosition.end()-2);
+  double xDir = goalPosX - *(vectorPosition.end()-3);
+  double yDir = goalPosY - *(vectorPosition.end()-2);
   setVersor( xDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)) ,
 	     yDir/std::sqrt(std::pow(xDir,2) + std::pow(yDir,2)));
   *(nextPosition.begin()) = goalPosX;

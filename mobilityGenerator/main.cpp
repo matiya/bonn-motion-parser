@@ -1,4 +1,17 @@
-//@bugs: put the name of the nodes in the class constructor so that the two swithces can be avoided
+/**
+ * @file main.cpp
+ * @author Matias Siracusa
+ * @version 
+ * @brief Simulates the movemnet of a rescue team
+ * @date 22.02.2014
+ * @bugs: put the name of the nodes in the class constructor so that the two swithces can be avoided
+*/
+
+/**
+ * @mainpage mobilityModel
+ * 
+ */
+
 
 #include <iostream>
 #include <fstream>
@@ -15,7 +28,6 @@
 
 /**
  * @brief returns a random integer between 0 and n
- * 
  * @param generator ...
  * @param n ...
  * @return int

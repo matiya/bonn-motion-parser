@@ -1,3 +1,11 @@
+/**
+ * @file obstacle.h
+ * @author Matias Siracusa
+ * @version 
+ * @brief obstacle class
+ * @date 22.02.2014
+*/
+
 #ifndef OBSTACLE_H
 #define OBSTACLE_H
 #include<cmath>

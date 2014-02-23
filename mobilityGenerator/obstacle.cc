@@ -1,3 +1,11 @@
+/**
+ * @file obstacle.cc
+ * @author Matias Siracusa
+ * @version 
+ * @brief obstacle class
+ * @date 22.02.2014
+*/
+
 #include"obstacle.h"
 
 
