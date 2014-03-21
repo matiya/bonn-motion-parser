@@ -89,8 +89,8 @@ Obstacle::vertex calcClosestVertex(Node firefighter, Obstacle* obstacle, unsigne
 	tempVertex = (obstacle + i)->getClosestVertex(*(firefighter.getPosition().end()-3)+(FIELD_SIZE_X),
 						      *(firefighter.getPosition().end()-2));
       }
-      std::cout << "obstacle: " << i << " \tvertex: " << vertex.x<<","<< vertex.y<< " \ttempVertex: "<< tempVertex.x << "," <<tempVertex.y<< std::endl;
-       std::cout << "Distance between " << i << " and " << m << " is " << distanceStruct.distance << "\tr: " << distanceStruct.r <<  std::endl;
+//       std::cout << "obstacle: " << i << " \tvertex: " << vertex.x<<","<< vertex.y<< " \ttempVertex: "<< tempVertex.x << "," <<tempVertex.y<< std::endl;
+//        std::cout << "Distance between " << i << " and " << m << " is " << distanceStruct.distance << "\tr: " << distanceStruct.r <<  std::endl;
       if(std::abs(distanceStruct.distance) < 20 && distanceStruct.r >= 0.0 && distanceStruct.r <= 1.0){
 	std::cout << "obstacle " << m << " it's close to obstacle "<< i << " at " << vertex.x<<","<< vertex.y<< std::endl;
 	if(vertex.x == tempVertex.x && vertex.y == tempVertex.y){
@@ -118,19 +118,19 @@ Obstacle::vertex calcClosestVertex(Node firefighter, Obstacle* obstacle, unsigne
 int main(int argc, char **argv) {
   
   
-  int k =0 ;
-  std::vector<float> segment = askForParameters(argc, argv); 
-  const unsigned int obstaclesNumber = segment.size()/4;
-  double time = 0;
-  double prevPosYFF = 0, prevPosXFF = 0, prevPosXD = 0, prevPosYD = 0;
-  double yDeviation = 0, xDeviation = 0, xDir = 0, yDir = 0;
-  double dogSpeed = 0, ffSpeed = 0;
-  Obstacle::linePointParameters distanceToPoint;
-  Obstacle::vertex closestVertex;
-  const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;
-  const double timeStep = (double) DURATION/SAMPLES_NUMBER;  
-  std::ofstream resultsFile, nsFile;
-  std::ifstream f(FILE_NAME + std::to_string(k));
+  int k =0; 								/*Index appended to file name*/
+  std::vector<float> segment = askForParameters(argc, argv); 		/*vector with the obstacles' vertices*/
+  const unsigned int obstaclesNumber = segment.size()/4;		/*number of obstacles*/
+  double time = 0;							/*time of the simulation*/
+  double prevPosYFF = 0, prevPosXFF = 0, prevPosXD = 0, prevPosYD = 0;	/*previous position of node*/
+  double yDeviation = 0, xDeviation = 0;				/*node random deviation along x and y axis*/
+  double dogSpeed = 0, ffSpeed = 0;					/*speed of nodes*/
+  Obstacle::linePointParameters distanceToPoint;			/*structure with info about the obstacles' position*/
+  Obstacle::vertex closestVertex;					/*closest vertex a node will head to avoid an obstacle*/
+  const double rfDist = (double) FIELD_SIZE_X / NUM_NODES;		/*distance between nodes*/
+  const double timeStep = (double) DURATION/SAMPLES_NUMBER;		/*each cycle the simulation time will be increased by this quantity*/
+  std::ofstream resultsFile, nsFile;					/*file to feed into simulator*/
+  std::ifstream f(FILE_NAME + std::to_string(k));			/*file for testing purposes*/
   
   /*check if file exists already, if it does, create a new one appending 
    * an increasing counter to the end of the file xx0, xx1, xx2 ...*/
@@ -184,9 +184,6 @@ int main(int argc, char **argv) {
 	prevPosXFF = *(firefighter[i].getPosition().end()-3);
 	prevPosXD = *(dog[i].getPosition().end()-3);
 	prevPosYD = *(dog[i].getPosition().end()-2);
-	do{
-	  dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
-	}while(dogSpeed > DOG_SPEED + STD_DEVIATION);
       }
       catch(std::exception& e){
 	std::cout << "ERROR: accesing previous positions" << std::endl;
@@ -199,8 +196,8 @@ int main(int argc, char **argv) {
 	  /*distance within line of sight and ahead of node*/
 	  if(distanceToPoint.distance < LOS  && distanceToPoint.distance > 0 && distanceToPoint.r > 0 && distanceToPoint.r < 1){ 
 	    if(verbose)
-	      std::cout << "[I](@ "<<time << "s)  Node "<< i << " that is in ("<< (int)prevPosXFF << "," << (int)prevPosYFF
-			<< ") will collide with obstacle " << j << " in " << (int)distanceToPoint.distance << "m."; 
+	      std::cout << "[I](@ "<<time << "s)  Node "<< i << " which is in ("<< (int)prevPosXFF << "," << (int)prevPosYFF
+			<< ") will collide with obstacle " << j << " in " << (int)distanceToPoint.distance << "m." << std::endl; 
 	    closestVertex = calcClosestVertex(firefighter[i], obstacle, obstaclesNumber, j);
  	    
 	    /*if closest vertex is on the right of node, set the direction 
@@ -226,13 +223,39 @@ int main(int argc, char **argv) {
 	  }
 	}
       }
-      /*update position of firefighters*/
-      ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10);
-      /*issue a warning if the speed of the firefigther is unrealistic*/
-      if(ffSpeed > 1.5*1.2){ //20% over average walking speed
-	std::cout << "[W] Firefighter " << i << " is moving at " << ffSpeed << 
-	"m/s.\nThis is higher than the average of 1.4m/s" << std::endl;
+      
+      if(firefighter[i].powerUpTime > 0){
+	firefighter[i].powerUpTime -= timeStep;
+	ffSpeed = normal_integer(gen2, firefighter[i].alteredSpeed, STD_DEVIATION/10);
+	dogSpeed = normal_integer(gen2, dog[i].alteredSpeed, STD_DEVIATION);
       }
+      else{
+	/*Calculate random probability of node slowing down or speeding up given a random time*/
+	if(random_integer(gen, 100) < 10){
+	  double randomSpeed = random_integer(gen, 2) - 1; //FIXME: Hardcoded
+	  firefighter[i].alteredSpeed =  normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10) + randomSpeed;
+	  dog[i].alteredSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION) + randomSpeed;
+	  firefighter[i].powerUpTime = random_integer(gen, 50); //FIXME: Harcoded.
+	}
+	
+	/*calculate speed of dogs*/
+	do{
+	  dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
+	}while(dogSpeed > DOG_SPEED + STD_DEVIATION);
+	
+	/*calculate speed of ff*/
+	ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10);
+	
+	/*issue a warning if the speed of the firefigther is unrealistic*/
+	if(ffSpeed > 1.5*1.2){ //20% over average walking speed
+	  std::cout << "[W] Firefighter " << i << " is moving at " << ffSpeed << 
+		       "m/s.\nThis is higher than the average of 1.4m/s" << std::endl;
+      }
+      }
+
+      
+      /*update position of firefighters*/
+      
       /*flags to indicate whether or not a node can return
       * to its original position when avoiding an obstacle*/
       bool canReturn = true;
@@ -259,7 +282,7 @@ int main(int argc, char **argv) {
 	  if(std::sqrt(std::pow(*(firefighter[i].getNextPosition().begin()) - prevPosXFF,2) + 
 	     std::pow(*(firefighter[i].getNextPosition().begin()+1) - prevPosYFF,2)) < timeStep * ffSpeed + STD_DEVIATION){
 	    if(verbose)
-	      std::cout << "[I]" <<time << ": FF " << i <<" reached goal position. Will try to return to previous position." << std::endl;
+	      std::cout << "[I] (@" <<time << "s) FF " << i <<" reached goal position.\n\tWill try to return to previous position." << std::endl;
 	    firefighter[i].state = LINEAR_AVOIDING_OBSTACLE;
 	  }
 	  firefighter[i].setPosition(time, 
@@ -310,7 +333,7 @@ int main(int argc, char **argv) {
 	   if(std::sqrt(std::pow(*(firefighter[i].getNextPosition().begin()) - prevPosXFF,2) + 
 	      std::pow(*(firefighter[i].getNextPosition().begin()+1) - prevPosYFF,2)) < timeStep * ffSpeed + STD_DEVIATION){
 	     if(verbose)
-	      std::cout << "[I] (@" <<time << ") FF " << i <<" reached goal position. Will resume normal movement." << std::endl;
+	      std::cout << "[I] (@" <<time << ") FF " << i <<" reached goal position.\n\tWill resume normal movement." << std::endl;
 	     firefighter[i].state = LINEAR;
 	    }
 	  firefighter[i].setPosition(time,
@@ -363,7 +386,8 @@ int main(int argc, char **argv) {
 	  /*check that current position is close to goal position*/
 	  if(std::sqrt(std::pow(*(dog[i].getNextPosition().begin()) - prevPosXD,2) + 
 	     std::pow(*(dog[i].getNextPosition().begin()+1) - prevPosYD,2)) < timeStep * ffSpeed + STD_DEVIATION){
-	    std::cout << "[I]" <<time << ": Dog " << i <<" reached goal position. Will try to return to previous position." << std::endl;
+	    if(verbose)
+	      std::cout << "[I] (@" <<time << "s) Dog " << i <<" reached goal position.\n\t Will try to return to previous position." << std::endl;
 	    dog[i].state = LINEAR_AVOIDING_OBSTACLE;
 	  }
 	  dog[i].setPosition(time, 
@@ -453,7 +477,7 @@ int main(int argc, char **argv) {
     }
   }
   
-  //writing output to a file
+  /*writing output to a file in the ns3 trace format and to another one that will store the info without format */
   nsFile.open("ns_" + FILE_NAME + std::to_string(k), std::ofstream::out | std::ofstream::trunc); //to feed into ns-3
   resultsFile.open(FILE_NAME + std::to_string(k), std::ofstream::out | std::ofstream::trunc); //for debugging purposes
     for(int j = 0; j < NUM_NODES; j++){ //circle through nodes

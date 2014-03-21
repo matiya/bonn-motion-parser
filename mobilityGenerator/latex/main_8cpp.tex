@@ -1,0 +1,126 @@
+\hypertarget{main_8cpp}{\section{main.\-cpp File Reference}
+\label{main_8cpp}\index{main.\-cpp@{main.\-cpp}}
+}
+
+
+Simulates the movemnet of a rescue team.  
+
+
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$cstdlib$>$}\\*
+{\ttfamily \#include $<$sys/stat.\-h$>$}\\*
+{\ttfamily \#include $<$random$>$}\\*
+{\ttfamily \#include $<$sstream$>$}\\*
+{\ttfamily \#include $<$string$>$}\\*
+{\ttfamily \#include \char`\"{}node.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}obstacle.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}parameters.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{main_8cpp_a9cae8070132975a632b6ada5e8a74bb2}{random\-\_\-integer} (std\-::mt19937 \&generator, int n)
+\begin{DoxyCompactList}\small\item\em returns a random integer between 0 and n \end{DoxyCompactList}\item 
+double \hyperlink{main_8cpp_adaa5d4ef1397b90e11e49f2d7dfc522a}{normal\-\_\-integer} (std\-::default\-\_\-random\-\_\-engine \&generator, double mean, double std\-Deviation)
+\begin{DoxyCompactList}\small\item\em returns a random double drawn from a normal distribution \end{DoxyCompactList}\item 
+\hyperlink{struct_obstacle_1_1vertex}{Obstacle\-::vertex} \hyperlink{main_8cpp_a4cbe0d2f45f81087eb078bbe6436b845}{calc\-Closest\-Vertex} (\hyperlink{class_node}{Node} firefighter, \hyperlink{class_obstacle}{Obstacle} $\ast$obstacle, unsigned int q, unsigned int i)
+\begin{DoxyCompactList}\small\item\em returns the closest vertex of an obstacle to a given node \end{DoxyCompactList}\item 
+\hypertarget{main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{int {\bfseries main} (int argc, char $\ast$$\ast$argv)}\label{main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Simulates the movemnet of a rescue team. \begin{DoxyAuthor}{Author}
+Matias Siracusa 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+22.\-02.\-2014 \-: put the name of the nodes in the class constructor so that the two swithces can be avoided 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\hypertarget{main_8cpp_a4cbe0d2f45f81087eb078bbe6436b845}{\index{main.\-cpp@{main.\-cpp}!calc\-Closest\-Vertex@{calc\-Closest\-Vertex}}
+\index{calc\-Closest\-Vertex@{calc\-Closest\-Vertex}!main.cpp@{main.\-cpp}}
+\subsubsection[{calc\-Closest\-Vertex}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Obstacle\-::vertex} calc\-Closest\-Vertex (
+\begin{DoxyParamCaption}
+\item[{{\bf Node}}]{firefighter, }
+\item[{{\bf Obstacle} $\ast$}]{obstacle, }
+\item[{unsigned int}]{q, }
+\item[{unsigned int}]{i}
+\end{DoxyParamCaption}
+)}}\label{main_8cpp_a4cbe0d2f45f81087eb078bbe6436b845}
+
+
+returns the closest vertex of an obstacle to a given node 
+
+When a node detects that an obstacle lies ahead of it, it will look for the closes edge of said obstacle in order to avoid colliding with it. If next to said edge there is another obstacle, it will return then the other edge of the 1st obstacle. It also checks that the path it would have to take to avoid the obstacle lies within the field.
+
+
+\begin{DoxyParams}{Parameters}
+{\em firefighter} & firefighter ahead of whom the node lies \\
+\hline
+{\em obstacle} & obstacle ahead of the node \\
+\hline
+{\em q} & quantity of obstacles \\
+\hline
+{\em i} & index of the fiven ff-\/node in the node array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{struct_obstacle_1_1vertex}{Obstacle\-::vertex} 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Bug}
+\item[\hyperlink{bug__bug000001}{Bug}]not well tested 
+
+change obstacles to polygons \end{DoxyRefDesc}
+\hypertarget{main_8cpp_adaa5d4ef1397b90e11e49f2d7dfc522a}{\index{main.\-cpp@{main.\-cpp}!normal\-\_\-integer@{normal\-\_\-integer}}
+\index{normal\-\_\-integer@{normal\-\_\-integer}!main.cpp@{main.\-cpp}}
+\subsubsection[{normal\-\_\-integer}]{\setlength{\rightskip}{0pt plus 5cm}double normal\-\_\-integer (
+\begin{DoxyParamCaption}
+\item[{std\-::default\-\_\-random\-\_\-engine \&}]{generator, }
+\item[{double}]{mean, }
+\item[{double}]{std\-Deviation}
+\end{DoxyParamCaption}
+)}}\label{main_8cpp_adaa5d4ef1397b90e11e49f2d7dfc522a}
+
+
+returns a random double drawn from a normal distribution 
+
+
+\begin{DoxyParams}{Parameters}
+{\em generator} & \$\{p\-\_\-generator\-:...\} \\
+\hline
+{\em mean} & mean of the normal distribution \\
+\hline
+{\em std\-Deviation} & standar deviation of the normal distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double random positive double 
+\end{DoxyReturn}
+\hypertarget{main_8cpp_a9cae8070132975a632b6ada5e8a74bb2}{\index{main.\-cpp@{main.\-cpp}!random\-\_\-integer@{random\-\_\-integer}}
+\index{random\-\_\-integer@{random\-\_\-integer}!main.cpp@{main.\-cpp}}
+\subsubsection[{random\-\_\-integer}]{\setlength{\rightskip}{0pt plus 5cm}int random\-\_\-integer (
+\begin{DoxyParamCaption}
+\item[{std\-::mt19937 \&}]{generator, }
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)}}\label{main_8cpp_a9cae8070132975a632b6ada5e8a74bb2}
+
+
+returns a random integer between 0 and n 
+
+
+\begin{DoxyParams}{Parameters}
+{\em generator} & ... \\
+\hline
+{\em n} & ... \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}

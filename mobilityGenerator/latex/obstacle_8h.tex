@@ -1,0 +1,39 @@
+\hypertarget{obstacle_8h}{\section{obstacle.\-h File Reference}
+\label{obstacle_8h}\index{obstacle.\-h@{obstacle.\-h}}
+}
+
+
+obstacle class  
+
+
+{\ttfamily \#include $<$cmath$>$}\\*
+{\ttfamily \#include $<$iostream$>$}\\*
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_obstacle}{Obstacle}
+\begin{DoxyCompactList}\small\item\em Class to define the behaviour of obstacles in the field. An obstacle is defined as a line segment given by two points (x1,y1) and (x2,y2). Several line segments can form a polygon or not, that's left to the user. An obstacle definition is given in a separated file (-\/o flag) as a list of floats delimited by commas. Like this\-: 1.\-0,2,3.\-1,4,5,6,7,8 That would define two line segments in (1.\-0;2.\-3), (3.\-1,4) and (5,6);(7,8). Any node would have to notice an obstacle as soon as it enters its line of sight, then ask itself if given its current movement, a collision might happen. If yes, calculate the shortest path to avoid collision. While avoiding an obstacle, both ff and dogs would leave their charachteristic movement, at least at first. After {\itshape cf47038600}, when an obstacle gets in the line of sight of a firefighter it will calculate the closest vertex of the obstacle and the it will head into a direction given by (closest\-Vertex\-X +-\/ 5; closest\-Vertex\-Y +-\/5) as long as that position lies inside the field. If there are no obstacles in the new calc position, the ff will head in that direction. It will then try to return to its original position and if not possible (because there is an obstacle in the way) it will continue until the way is clear. The dog interrupts its movement and tags along the ff. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_obstacle_1_1vertices}{Obstacle\-::vertices}
+\begin{DoxyCompactList}\small\item\em The vertices structure defines a line segment from (x1,y1) to (x2,y2) \end{DoxyCompactList}\item 
+struct \hyperlink{struct_obstacle_1_1vertex}{Obstacle\-::vertex}
+\begin{DoxyCompactList}\small\item\em This structure defines a single vertex in (x,y) \end{DoxyCompactList}\item 
+struct \hyperlink{struct_obstacle_1_1line_point_parameters}{Obstacle\-::line\-Point\-Parameters}
+\begin{DoxyCompactList}\small\item\em This structure holds information useful to determine whether a line is in front of a point. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{obstacle_8h_ab605653880a4ef4ae83f273421b0d555}{unsigned long {\bfseries F\-I\-E\-L\-D\-\_\-\-S\-I\-Z\-E\-\_\-\-X}}\label{obstacle_8h_ab605653880a4ef4ae83f273421b0d555}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+obstacle class \begin{DoxyAuthor}{Author}
+Matias Siracusa 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+22.\-02.\-2014 
+\end{DoxyDate}

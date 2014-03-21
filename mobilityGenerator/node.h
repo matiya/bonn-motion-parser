@@ -53,6 +53,16 @@ public:
    * @brief constructor TODO: add the thing with the names 
    * 
    */
+  /**
+   * @brief speed of the node, only used when the node is either slowing down or speeding up.
+   * 
+   */
+  double alteredSpeed;
+  /**
+   * @brief time in senconds the nodes' speed is altered
+   * 
+   */
+  double powerUpTime = 0;
   Node();
   
   /**
@@ -75,16 +85,42 @@ public:
    */
   void setVersor (double a, double b);
   /**
-   * @brief calculate the versor 
+   * @brief calculates the versor which points in the direction goalPosition - currentPosition.
+   * It gets the goal position as a parameter and gets the current postition from the last stored
+   * values in the vectorPosition. It then calls the setVersor function with the calculated value and
+   * stores the goalPosition in the nextPosition vector.
    * 
-   * @param  ...
-   * @param  ...
+   * @param  goalPosX  x coordinate of the goal position
+   * @param  goalPosY  y coordinate of the goal position
    * @return void
    */
-  void calcVersor ( double, double);
+  void calcVersor ( double goalPosX, double goalPosY);
+  
+  /**
+   * @brief returns the vectorPosition vector
+   * 
+   * @return const std::vector< double, std::allocator >
+   */
   const std::vector<double> getPosition();
+  
+  /**
+   * @brief returns the nextPosition vector
+   * 
+   * @return std::vector< double, std::allocator >
+   */
   std::vector<double> getNextPosition();
+  
+  /**
+   * @brief return the versor vector
+   * 
+   * @return const std::vector< double, std::allocator >
+   */
   const std::vector<double> getVersor();
+  
+  /**
+   * @brief vector used to store a position the node must return to.
+   * 
+   */
   std::vector<double> previousPosition = {0, 0};//C++11
 
 };

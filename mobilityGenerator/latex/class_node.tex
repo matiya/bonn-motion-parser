@@ -1,0 +1,153 @@
+\hypertarget{class_node}{\section{Node Class Reference}
+\label{class_node}\index{Node@{Node}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_node_ad7a34779cad45d997bfd6d3d8043c75f}{\hyperlink{class_node_ad7a34779cad45d997bfd6d3d8043c75f}{Node} ()}\label{class_node_ad7a34779cad45d997bfd6d3d8043c75f}
+
+\begin{DoxyCompactList}\small\item\em constructor T\-O\-D\-O\-: add the thing with the names \end{DoxyCompactList}\item 
+void \hyperlink{class_node_ae15a99b12ee9e6cb219a52051cdee090}{set\-Position} (double x, double y, double t, double s)
+\begin{DoxyCompactList}\small\item\em appends data to the vector\-Position vector \end{DoxyCompactList}\item 
+void \hyperlink{class_node_ada68112a882929b308ce62f0499913c1}{set\-Versor} (double a, double b)
+\begin{DoxyCompactList}\small\item\em writes into the versor vector a versor that points in the direction from current position to the next position. \end{DoxyCompactList}\item 
+void \hyperlink{class_node_a689845425deb2edf1201826ec6429f59}{calc\-Versor} (double goal\-Pos\-X, double goal\-Pos\-Y)
+\begin{DoxyCompactList}\small\item\em calculates the versor which points in the direction goal\-Position -\/ current\-Position. It gets the goal position as a parameter and gets the current postition from the last stored values in the vector\-Position. It then calls the set\-Versor function with the calculated value and stores the goal\-Position in the next\-Position vector. \end{DoxyCompactList}\item 
+const std\-::vector$<$ double $>$ \hyperlink{class_node_a7a63a9c380109553515be27fe088f4d7}{get\-Position} ()
+\begin{DoxyCompactList}\small\item\em returns the vector\-Position vector \end{DoxyCompactList}\item 
+std\-::vector$<$ double $>$ \hyperlink{class_node_a771223d354d7b3037c454cc5c9d340d0}{get\-Next\-Position} ()
+\begin{DoxyCompactList}\small\item\em returns the next\-Position vector \end{DoxyCompactList}\item 
+const std\-::vector$<$ double $>$ \hyperlink{class_node_a0e573ebfab9c6db141e39e8cd76064ed}{get\-Versor} ()
+\begin{DoxyCompactList}\small\item\em return the versor vector \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_node_a3dc90021cc03269bfc754c815d12f701}{\hyperlink{node_8h_ae4bcd51a032844028300b600d585d021}{states\-\_\-t} \hyperlink{class_node_a3dc90021cc03269bfc754c815d12f701}{state}}\label{class_node_a3dc90021cc03269bfc754c815d12f701}
+
+\begin{DoxyCompactList}\small\item\em variable to hold the node's current state \end{DoxyCompactList}\item 
+\hypertarget{class_node_a053dd938575ddfbaef5bf5390ecd42e5}{std\-::vector$<$ double $>$ \hyperlink{class_node_a053dd938575ddfbaef5bf5390ecd42e5}{previous\-Position} = \{0, 0\}}\label{class_node_a053dd938575ddfbaef5bf5390ecd42e5}
+
+\begin{DoxyCompactList}\small\item\em vector used to store a position the node must return to. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_node_a689845425deb2edf1201826ec6429f59}{\index{Node@{Node}!calc\-Versor@{calc\-Versor}}
+\index{calc\-Versor@{calc\-Versor}!Node@{Node}}
+\subsubsection[{calc\-Versor}]{\setlength{\rightskip}{0pt plus 5cm}void Node\-::calc\-Versor (
+\begin{DoxyParamCaption}
+\item[{double}]{goal\-Pos\-X, }
+\item[{double}]{goal\-Pos\-Y}
+\end{DoxyParamCaption}
+)}}\label{class_node_a689845425deb2edf1201826ec6429f59}
+
+
+calculates the versor which points in the direction goal\-Position -\/ current\-Position. It gets the goal position as a parameter and gets the current postition from the last stored values in the vector\-Position. It then calls the set\-Versor function with the calculated value and stores the goal\-Position in the next\-Position vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em goal\-Pos\-X} & x coordinate of the goal position \\
+\hline
+{\em goal\-Pos\-Y} & y coordinate of the goal position \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_node_a771223d354d7b3037c454cc5c9d340d0}{\index{Node@{Node}!get\-Next\-Position@{get\-Next\-Position}}
+\index{get\-Next\-Position@{get\-Next\-Position}!Node@{Node}}
+\subsubsection[{get\-Next\-Position}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ double $>$ Node\-::get\-Next\-Position (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_node_a771223d354d7b3037c454cc5c9d340d0}
+
+
+returns the next\-Position vector 
+
+\begin{DoxyReturn}{Returns}
+std\-::vector$<$ double, std\-::allocator $>$ 
+\end{DoxyReturn}
+\hypertarget{class_node_a7a63a9c380109553515be27fe088f4d7}{\index{Node@{Node}!get\-Position@{get\-Position}}
+\index{get\-Position@{get\-Position}!Node@{Node}}
+\subsubsection[{get\-Position}]{\setlength{\rightskip}{0pt plus 5cm}const std\-::vector$<$ double $>$ Node\-::get\-Position (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_node_a7a63a9c380109553515be27fe088f4d7}
+
+
+returns the vector\-Position vector 
+
+\begin{DoxyReturn}{Returns}
+const std\-::vector$<$ double, std\-::allocator $>$ 
+\end{DoxyReturn}
+\hypertarget{class_node_a0e573ebfab9c6db141e39e8cd76064ed}{\index{Node@{Node}!get\-Versor@{get\-Versor}}
+\index{get\-Versor@{get\-Versor}!Node@{Node}}
+\subsubsection[{get\-Versor}]{\setlength{\rightskip}{0pt plus 5cm}const std\-::vector$<$ double $>$ Node\-::get\-Versor (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_node_a0e573ebfab9c6db141e39e8cd76064ed}
+
+
+return the versor vector 
+
+\begin{DoxyReturn}{Returns}
+const std\-::vector$<$ double, std\-::allocator $>$ 
+\end{DoxyReturn}
+\hypertarget{class_node_ae15a99b12ee9e6cb219a52051cdee090}{\index{Node@{Node}!set\-Position@{set\-Position}}
+\index{set\-Position@{set\-Position}!Node@{Node}}
+\subsubsection[{set\-Position}]{\setlength{\rightskip}{0pt plus 5cm}void Node\-::set\-Position (
+\begin{DoxyParamCaption}
+\item[{double}]{x, }
+\item[{double}]{y, }
+\item[{double}]{t, }
+\item[{double}]{s}
+\end{DoxyParamCaption}
+)}}\label{class_node_ae15a99b12ee9e6cb219a52051cdee090}
+
+
+appends data to the vector\-Position vector 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & x position \\
+\hline
+{\em y} & y position \\
+\hline
+{\em s} & speed \\
+\hline
+{\em t} & time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\hypertarget{class_node_ada68112a882929b308ce62f0499913c1}{\index{Node@{Node}!set\-Versor@{set\-Versor}}
+\index{set\-Versor@{set\-Versor}!Node@{Node}}
+\subsubsection[{set\-Versor}]{\setlength{\rightskip}{0pt plus 5cm}void Node\-::set\-Versor (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b}
+\end{DoxyParamCaption}
+)}}\label{class_node_ada68112a882929b308ce62f0499913c1}
+
+
+writes into the versor vector a versor that points in the direction from current position to the next position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & x component \\
+\hline
+{\em b} & y component \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{node_8h}{node.\-h}\item 
+\hyperlink{node_8cc}{node.\-cc}\end{DoxyCompactItemize}

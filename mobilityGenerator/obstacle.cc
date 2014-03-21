@@ -17,7 +17,7 @@ void Obstacle::setVertices(double a, double b, double c, double d){
   vertiStruct.y1 = b;
   vertiStruct.x2 = c;
   vertiStruct.y2 = d;
-  L = std::sqrt(std::pow((vertiStruct.y2-vertiStruct.y1),2) + std::pow((vertiStruct.x2-vertiStruct.x1),2));
+  lengthOfLineSegment = std::sqrt(std::pow((vertiStruct.y2-vertiStruct.y1),2) + std::pow((vertiStruct.x2-vertiStruct.x1),2));
 //   std::cout << "L : " << L << std::endl;
 }
 
@@ -70,16 +70,13 @@ Obstacle::vertex Obstacle::getClosestVertex(double a, double b){
 }
 
 Obstacle::linePointParameters Obstacle::getDistanceToPoint(double px, double py){
-//   Logic taken from http://www.exaflop.org/docs/cgafaq/cga1.html
+//Logic taken from http://www.exaflop.org/docs/cgafaq/cga1.html
 //http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html  
-//   double ix, iy;
-//   double dist;
-//   double temp;
-  lpStruct.r = ( (vertiStruct.y1 - py)*(vertiStruct.y1-vertiStruct.y2) - (vertiStruct.x1 - px)*(vertiStruct.x2-vertiStruct.x1) )/( std::pow(L,2) );
-  lpStruct.s = ( (vertiStruct.y1 - py)*(vertiStruct.y2-vertiStruct.y1) - (vertiStruct.x1 - px)*(vertiStruct.x2-vertiStruct.x1) )/( std::pow(L,2) );
-  //lpStruct.distance = lpStruct.s*L;
-//   lpStruct.distance = std::abs( (vertiStruct.y1 - py)*(vertiStruct.x2-vertiStruct.x1) - (vertiStruct.x1 - px)*(vertiStruct.y2-vertiStruct.y1) )/L;
-//   temp = (((px - vertiStruct.x1) * (vertiStruct.x2 - /*vertiStruct*/.x1)) + ((py - vertiStruct.y1) * (vertiStruct.y2 - vertiStruct.y1)))/( std::pow(L,2) );
+
+  lpStruct.r = ( (vertiStruct.y1 - py)*(vertiStruct.y1-vertiStruct.y2) - 
+		 (vertiStruct.x1 - px)*(vertiStruct.x2-vertiStruct.x1) )/( std::pow(lengthOfLineSegment,2) );
+  lpStruct.s = ( (vertiStruct.y1 - py)*(vertiStruct.y2-vertiStruct.y1) - 
+		 (vertiStruct.x1 - px)*(vertiStruct.x2-vertiStruct.x1) )/( std::pow(lengthOfLineSegment,2) );
   if ( (lpStruct.r <= 0.0 || lpStruct.r > 1.0 ) ){
     lpStruct.px =  std::sqrt(std::pow((vertiStruct.y2-py),2) + std::pow((vertiStruct.x2-px),2));
     lpStruct.py =  std::sqrt(std::pow((vertiStruct.y1-py),2) + std::pow((vertiStruct.x1-px),2));
@@ -105,10 +102,7 @@ Obstacle::linePointParameters Obstacle::getDistanceToPoint(double px, double py)
       lpStruct.r = 100;
     }
   }
-//  if(lpStruct.py < py){ //obstacle lies behind node
-//     lpStruct.r = 10;
-//   }
-  
+
   return lpStruct;
 }
 

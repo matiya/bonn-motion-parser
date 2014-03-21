@@ -1,30 +1,24 @@
+/**
+ * @file node.h
+ * @author Matias Siracusa
+ * @version 
+ * @brief Parses parameters from the cmd line and feeds them into the program
+ * @date 22.02.2014
+ * @bugs Set some more meaningful parameters and maybe change FIELD_SIZE_COORDS to DISTANCE_BETWEEN_NODES 
+ * 
+*/
+
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-//TODO: ask for the parameters in the cmd line
-//TODO: set some more realistic parameters and maybe change FIELD_SIZE_COORDS to DISTANCE_BETWEEN_NODES
-//TODO: replace DOG_SPEED with a random number. It may be a good idea to draw speed from a normal distribution
-//	with a mean around firefighter_speed
-//#define FIELD_SIZE_X 300
-//#define FIELD_SIZE_Y 600
-//#define NUM_NODES 6 //actually 6 firefighters and 6 dogs, so 12
-//#define SPEED_NODES 0.4 //m/s
-// #define STARTING_POS_X 100
-// #define STARTING_POS_Y 100
-//#define SAMPLES_NUMBER 500
-//#define DURATION 900
-//#define DELTA_X 15 //(m) this is the distance the dogs will travel before returning
-//#define DELTA_Y 5 // how many meters are the dogs ahead of the firefighter
+#include "anyoption.cpp"
+#include <vector>
+
 #define SINE_ARC_LENGTH 7.64
 #define PI 3.14159265
 #define FILEPATH "../../data/scenario11.movements" //FIXME
 #define FILEPATH1 "../../data/ns_scenario11.movements"
-//#define DOG_SPEED (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI)
-//#define STD_DEVIATION DOG_SPEED/2
-//#define PROB	5 //in per mil
-//#define SEED 0//to make it truly random set to 0
-#include "anyoption.cpp" //change to .h
-#include <vector>
+
 
 unsigned long SAMPLES_NUMBER, DELTA_X, DELTA_Y, DURATION, SEED, FIELD_SIZE_X, FIELD_SIZE_Y;
 unsigned int PROB, NUM_NODES, LOS;
@@ -32,14 +26,20 @@ double STD_DEVIATION, SPEED_NODES, DOG_SPEED;
 bool verbose;
 std::string FILE_NAME, OBSTACLES_FILE;
 
-//void readObstaclesFile(std::string);
 
+/**
+ * @brief Reads the coordinates of the obstacles from a file, and stores them in a vector.
+ * In addition it also checks that the coordinates are in the right format.
+ * 
+ * @param obstaclesFile File in which the obstacles are defined.
+ * @return std::vector< float, std::allocator< void > > vector of floats with the coordinates of the obstacles.
+ */
 std::vector<float> readObstaclesFile(std::string obstaclesFile){
-  
-
   std::ifstream f(obstaclesFile);
   std::string asd;
   std::vector<float> segment;
+  
+  /*Check that the obstacle file exist*/
   if(!f.good()){
     std::cout << "[E] Obstacle file does not exist. " << std::endl;
     std::terminate();
@@ -48,13 +48,9 @@ std::vector<float> readObstaclesFile(std::string obstaclesFile){
     if(f.is_open()){
       while ( std::getline(f,asd, ',') )
       {
-	std::cout << asd << "\t" << std::stof(asd.c_str()) << std::endl;
+	//std::cout << asd << "\t" << std::stof(asd.c_str()) << std::endl;
 	segment.push_back(std::stof(asd.c_str()));
       }
-//       for ( int i = 0; i < segment.size() ; i++){
-// 	std::cout << segment.at(i) << std::endl;
-// 	//std::cout << segment.size() << " : "<< (segment.size()) % 4 << std::endl;
-//       }
       if( (segment.size() % 4) != 0)
       {
 	std::cout << "[E] Incorrect format of obstacles." << std::endl;
@@ -71,14 +67,19 @@ std::vector<float> readObstaclesFile(std::string obstaclesFile){
   return segment;
 }
 
+/**
+ * @brief Reads the parameters from the cmd line or from a file and feeds them into the program.
+ * 
+ * @param argc Argument count.
+ * @param argv Argument value.
+ * @return std::vector< float, std::allocator< void > > vector of floats with the coordinates of the obstacles.
+ */
 std::vector<float> askForParameters( int argc, char **argv){
  
     std::vector<float> segment;
     /* 1. CREATE AN OBJECT */
-    //AnyOption *opt = new AnyOption();
     AnyOption cmd;
     /* 2. SET PREFERENCES  */
-    //cmd.noPOSIX(); /* do not check for POSIX style character options */
     cmd.setVerbose(); /* print warnings about unknown options */
     cmd.autoUsagePrint(true); /* print usage for bad options */
 

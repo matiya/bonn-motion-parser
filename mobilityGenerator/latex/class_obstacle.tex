@@ -1,0 +1,133 @@
+\hypertarget{class_obstacle}{\section{Obstacle Class Reference}
+\label{class_obstacle}\index{Obstacle@{Obstacle}}
+}
+
+
+Class to define the behaviour of obstacles in the field. An obstacle is defined as a line segment given by two points (x1,y1) and (x2,y2). Several line segments can form a polygon or not, that's left to the user. An obstacle definition is given in a separated file (-\/o flag) as a list of floats delimited by commas. Like this\-: 1.\-0,2,3.\-1,4,5,6,7,8 That would define two line segments in (1.\-0;2.\-3), (3.\-1,4) and (5,6);(7,8). Any node would have to notice an obstacle as soon as it enters its line of sight, then ask itself if given its current movement, a collision might happen. If yes, calculate the shortest path to avoid collision. While avoiding an obstacle, both ff and dogs would leave their charachteristic movement, at least at first. After {\itshape cf47038600}, when an obstacle gets in the line of sight of a firefighter it will calculate the closest vertex of the obstacle and the it will head into a direction given by (closest\-Vertex\-X +-\/ 5; closest\-Vertex\-Y +-\/5) as long as that position lies inside the field. If there are no obstacles in the new calc position, the ff will head in that direction. It will then try to return to its original position and if not possible (because there is an obstacle in the way) it will continue until the way is clear. The dog interrupts its movement and tags along the ff.  
+
+
+
+
+{\ttfamily \#include $<$obstacle.\-h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_obstacle_1_1line_point_parameters}{line\-Point\-Parameters}
+\begin{DoxyCompactList}\small\item\em This structure holds information useful to determine whether a line is in front of a point. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_obstacle_1_1vertex}{vertex}
+\begin{DoxyCompactList}\small\item\em This structure defines a single vertex in (x,y) \end{DoxyCompactList}\item 
+struct \hyperlink{struct_obstacle_1_1vertices}{vertices}
+\begin{DoxyCompactList}\small\item\em The vertices structure defines a line segment from (x1,y1) to (x2,y2) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_obstacle_a8f734072321fa06a7b7dae2d5f50f352}{\hyperlink{class_obstacle_a8f734072321fa06a7b7dae2d5f50f352}{Obstacle} ()}\label{class_obstacle_a8f734072321fa06a7b7dae2d5f50f352}
+
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+\hyperlink{struct_obstacle_1_1vertex}{vertex} \hyperlink{class_obstacle_a7470a10c25f5f95451c18bad13aae5d1}{get\-Closest\-Vertex} (double a, double b)
+\begin{DoxyCompactList}\small\item\em Returns an obstacle's closest vertex to the point (a,b). It checks whether the path to avoid said vertex lies within 0 and F\-I\-E\-L\-D\-\_\-\-S\-I\-Z\-E\-\_\-\-X. If not it returns the other vertex. If both vertex are equal (x1,y1) == (x2,y2), throws a warning and returns either vertex. \end{DoxyCompactList}\item 
+void \hyperlink{class_obstacle_ad5a640f5b6b5fc1716bfa14219661be1}{set\-Vertices} (double a, double b, double c, double d)
+\begin{DoxyCompactList}\small\item\em Sets the verti\-Struct structure and calculates the length\-Of\-Line\-Segment parameter. \end{DoxyCompactList}\item 
+\hyperlink{struct_obstacle_1_1line_point_parameters}{line\-Point\-Parameters} \hyperlink{class_obstacle_a50c1c5f5130a7b20d04e003ed4e0476f}{get\-Distance\-To\-Point} (double px, double py)
+\begin{DoxyCompactList}\small\item\em Returns a structure with info about the position of a point relative to the obstacle. It takes a point (a node position) as a parameter, then it calculates where in the space said point is, relative to the position of the obstacle. Thus, it can be known whether the node will collide into the obstacle. \end{DoxyCompactList}\item 
+\hyperlink{struct_obstacle_1_1vertices}{vertices} \hyperlink{class_obstacle_a6a6337e7879e0d938a664d342e849232}{get\-Vertices} ()
+\begin{DoxyCompactList}\small\item\em Returns a structure with the vertices that conform the obstacle. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class to define the behaviour of obstacles in the field. An obstacle is defined as a line segment given by two points (x1,y1) and (x2,y2). Several line segments can form a polygon or not, that's left to the user. An obstacle definition is given in a separated file (-\/o flag) as a list of floats delimited by commas. Like this\-: 1.\-0,2,3.\-1,4,5,6,7,8 That would define two line segments in (1.\-0;2.\-3), (3.\-1,4) and (5,6);(7,8). Any node would have to notice an obstacle as soon as it enters its line of sight, then ask itself if given its current movement, a collision might happen. If yes, calculate the shortest path to avoid collision. While avoiding an obstacle, both ff and dogs would leave their charachteristic movement, at least at first. After {\itshape cf47038600}, when an obstacle gets in the line of sight of a firefighter it will calculate the closest vertex of the obstacle and the it will head into a direction given by (closest\-Vertex\-X +-\/ 5; closest\-Vertex\-Y +-\/5) as long as that position lies inside the field. If there are no obstacles in the new calc position, the ff will head in that direction. It will then try to return to its original position and if not possible (because there is an obstacle in the way) it will continue until the way is clear. The dog interrupts its movement and tags along the ff. 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_obstacle_a7470a10c25f5f95451c18bad13aae5d1}{\index{Obstacle@{Obstacle}!get\-Closest\-Vertex@{get\-Closest\-Vertex}}
+\index{get\-Closest\-Vertex@{get\-Closest\-Vertex}!Obstacle@{Obstacle}}
+\subsubsection[{get\-Closest\-Vertex}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Obstacle\-::vertex} Obstacle\-::get\-Closest\-Vertex (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b}
+\end{DoxyParamCaption}
+)}}\label{class_obstacle_a7470a10c25f5f95451c18bad13aae5d1}
+
+
+Returns an obstacle's closest vertex to the point (a,b). It checks whether the path to avoid said vertex lies within 0 and F\-I\-E\-L\-D\-\_\-\-S\-I\-Z\-E\-\_\-\-X. If not it returns the other vertex. If both vertex are equal (x1,y1) == (x2,y2), throws a warning and returns either vertex. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & x coordinate of the point we need to find the closest vertex to \\
+\hline
+{\em b} & y coordinate of the point we need to find the closest vertex to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{struct_obstacle_1_1vertex}{Obstacle\-::vertex} Closest vertex to (a,b) 
+\end{DoxyReturn}
+\hypertarget{class_obstacle_a50c1c5f5130a7b20d04e003ed4e0476f}{\index{Obstacle@{Obstacle}!get\-Distance\-To\-Point@{get\-Distance\-To\-Point}}
+\index{get\-Distance\-To\-Point@{get\-Distance\-To\-Point}!Obstacle@{Obstacle}}
+\subsubsection[{get\-Distance\-To\-Point}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Obstacle\-::line\-Point\-Parameters} Obstacle\-::get\-Distance\-To\-Point (
+\begin{DoxyParamCaption}
+\item[{double}]{px, }
+\item[{double}]{py}
+\end{DoxyParamCaption}
+)}}\label{class_obstacle_a50c1c5f5130a7b20d04e003ed4e0476f}
+
+
+Returns a structure with info about the position of a point relative to the obstacle. It takes a point (a node position) as a parameter, then it calculates where in the space said point is, relative to the position of the obstacle. Thus, it can be known whether the node will collide into the obstacle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em px} & x coordinate of point \\
+\hline
+{\em py} & y coordinate of point \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{struct_obstacle_1_1line_point_parameters}{Obstacle\-::line\-Point\-Parameters} 
+\end{DoxyReturn}
+\hypertarget{class_obstacle_a6a6337e7879e0d938a664d342e849232}{\index{Obstacle@{Obstacle}!get\-Vertices@{get\-Vertices}}
+\index{get\-Vertices@{get\-Vertices}!Obstacle@{Obstacle}}
+\subsubsection[{get\-Vertices}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Obstacle\-::vertices} Obstacle\-::get\-Vertices (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_obstacle_a6a6337e7879e0d938a664d342e849232}
+
+
+Returns a structure with the vertices that conform the obstacle. 
+
+\begin{DoxyReturn}{Returns}
+\hyperlink{struct_obstacle_1_1vertices}{Obstacle\-::vertices} 
+\end{DoxyReturn}
+\hypertarget{class_obstacle_ad5a640f5b6b5fc1716bfa14219661be1}{\index{Obstacle@{Obstacle}!set\-Vertices@{set\-Vertices}}
+\index{set\-Vertices@{set\-Vertices}!Obstacle@{Obstacle}}
+\subsubsection[{set\-Vertices}]{\setlength{\rightskip}{0pt plus 5cm}void Obstacle\-::set\-Vertices (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b, }
+\item[{double}]{c, }
+\item[{double}]{d}
+\end{DoxyParamCaption}
+)}}\label{class_obstacle_ad5a640f5b6b5fc1716bfa14219661be1}
+
+
+Sets the verti\-Struct structure and calculates the length\-Of\-Line\-Segment parameter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & x coordinate of 1st vertex \\
+\hline
+{\em b} & y coordinate of 1st vertex \\
+\hline
+{\em c} & x coordinate of 2nd vertex \\
+\hline
+{\em d} & y coordinate of 2nd vertex \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{obstacle_8h}{obstacle.\-h}\item 
+\hyperlink{obstacle_8cc}{obstacle.\-cc}\end{DoxyCompactItemize}
