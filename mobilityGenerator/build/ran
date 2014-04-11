@@ -1,0 +1,6 @@
+#!/bin/bash
+for i in `seq 1 100`;
+  do
+    ./mobilitygenerator -s 900 -n 6 -d 920 -f run -D 1 -p 90 -X 40
+  done    
+        

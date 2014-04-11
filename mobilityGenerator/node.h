@@ -63,6 +63,11 @@ public:
    * 
    */
   double powerUpTime = 0;
+  /**
+   * @brief Firefighter's deviation along the x axis. Simulates small object avoidance.
+   * 
+   */
+  double xDeviation = 0;
   Node();
   
   /**

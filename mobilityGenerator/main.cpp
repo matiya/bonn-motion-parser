@@ -2,7 +2,7 @@
  * @file main.cpp
  * @author Matias Siracusa
  * @version 
- * @brief Simulates the movemnet of a rescue team
+ * @brief Simulates the movement of a rescue team
  * @date 22.02.2014
  * @bugs: put the name of the nodes in the class constructor so that the two swithces can be avoided
 */
@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
       }
       else{
 	/*Calculate random probability of node slowing down or speeding up given a random time*/
-	if(random_integer(gen, 100) < 10){
+	if(random_integer(gen, 100) < 5){
 	  double randomSpeed = random_integer(gen, 2) - 1; //FIXME: Hardcoded
 	  firefighter[i].alteredSpeed =  normal_integer(gen2, SPEED_NODES, STD_DEVIATION/10) + randomSpeed;
 	  dog[i].alteredSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION) + randomSpeed;
@@ -262,18 +262,25 @@ int main(int argc, char **argv) {
       bool canReturnFF = true;
       
       switch(firefighter[i].state){
- 	/*the firefighter advances in a straight line with a probability of PROB per mil of deviating 2.5 meters in either
- 	direction along the x axis*/
+ 	/*The firefighter advances in a straight line with a probability of PROB per mil of deviating up to
+	 * 2.5 meters in either direction along the x axis
+	 */
 	case LINEAR:
 	  if(random_integer(gen, 1000) < PROB){
 	    do{
-		xDeviation = random_integer(gen, 5) - 2.5; //FIXME: hardcoded
+		xDeviation = random_integer(gen, 200) / 100; //FIXME: hardcoded
 	    }while((xDeviation + prevPosXFF) < 0 or (xDeviation + prevPosXFF) > FIELD_SIZE_X);
+	    if(firefighter[i].xDeviation >= 0 && (-xDeviation + prevPosXFF) > 0)
+	      xDeviation = -1*std::abs(xDeviation);
+	    else if(firefighter[i].xDeviation < 0)
+	      xDeviation = 1*std::abs(xDeviation);
+	    firefighter[i].xDeviation = xDeviation;
 	  }
 	  else{
 	    xDeviation = 0;
 	  }
 	  firefighter[i].setPosition(time, prevPosXFF + xDeviation, prevPosYFF + timeStep*ffSpeed, ffSpeed);
+	  
 	  break;
 	  
 	/*When the FF is avoiding an obstacle, it heads into the vertex previously calculated in the calcClosestVertex*/
