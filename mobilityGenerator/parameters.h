@@ -133,10 +133,10 @@ std::vector<float> askForParameters( int argc, char **argv){
     /* 5. PROCESS THE COMMANDLINE AND RESOURCE FILE */
 
     /* read options from a  option/resource file with ':' separated opttions or flags, one per line */
-    cmd.processFile( "/home/user/.options" );  
+    cmd.processFile( "options" );
     /* go through the command line and get the options  */
     cmd.processCommandArgs( argc, argv );
-
+    
     if( ! cmd.hasOptions()) { /* print usage if no options */
 	    cmd.printUsage();
 	    std::terminate();   

@@ -370,7 +370,9 @@ AnyOption::useCommandArgs( int _argc, char **_argv )
 	argv = _argv;
 	command_set = true;
 	appname = argv[0];
-	if(argc > 1) hasoptions = true;
+	if(argc > 1){ 
+	  hasoptions = true;
+	}
 }
 
 void

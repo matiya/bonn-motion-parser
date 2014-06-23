@@ -54,7 +54,7 @@ Obstacle::vertex Obstacle::getClosestVertex(double a, double b){
   else if(rDistance == lDistance){
     if(vertiStruct.x1 == vertiStruct.x2){
       if(vertiStruct.y1 == vertiStruct.y2){
-	std::cout << "[W] Trivial definition of obstacle. "<< std::endl; //FIXME
+	std::cout << "[W] Trivial definition of obstacle. "<< std::endl;
       }
       std::cout << "[W][W] "<< std::endl; //FIXME
     }

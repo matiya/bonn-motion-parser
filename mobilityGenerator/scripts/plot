@@ -1,0 +1,9 @@
+#!/bin/bash	
+
+rm ../data/sc* 
+./build/mobilitygenerator -s 900 -n 6 -d 920 -f "../data/sc" -D 1 -p 10 -X 40 # -o "../temp/obs"
+#echo $PWD
+wait 
+python2 scripts/animplot.py 
+
+

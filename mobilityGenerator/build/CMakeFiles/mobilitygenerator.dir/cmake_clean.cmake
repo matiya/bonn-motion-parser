@@ -1,4 +1,4 @@
-FILE(REMOVE_RECURSE
+file(REMOVE_RECURSE
   "CMakeFiles/mobilitygenerator.dir/main.o"
   "CMakeFiles/mobilitygenerator.dir/node.o"
   "CMakeFiles/mobilitygenerator.dir/obstacle.o"
@@ -7,6 +7,6 @@ FILE(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-FOREACH(lang CXX)
-  INCLUDE(CMakeFiles/mobilitygenerator.dir/cmake_clean_${lang}.cmake OPTIONAL)
-ENDFOREACH(lang)
+foreach(lang CXX)
+  include(CMakeFiles/mobilitygenerator.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
