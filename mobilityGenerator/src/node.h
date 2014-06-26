@@ -12,7 +12,9 @@
 
 #include <cmath>
 #include <vector>
+#include "vector2D.h"
 
+extern unsigned long SAMPLES_NUMBER;
 /**
  * @brief enum containing the diferent states the nodes can have
  *
@@ -43,9 +45,10 @@ private:
    *
    */
   std::vector<double> nextPosition = { 0, 0 };
+  Vector2D nextPos;
 
   /**
-   * @brief versor that points in the direction of nextPosition
+   * @brief unit vector that points in the direction of nextPosition
    *
    */
   std::vector<double> versor = { 0, 0 }; // C++11;
@@ -61,6 +64,12 @@ public:
    * @brief constructor TODO: add the thing with the names
    *
    */
+  Node();
+  /**
+   * @brief Default destructor
+   * 
+   */
+  ~Node() {};
   /**
    * @brief speed of the node, only used when the node is either slowing down or
    *speeding up.
@@ -78,7 +87,7 @@ public:
    *
    */
   double xDeviation = 0;
-  Node();
+
 
   /**
    * @brief appends data to the vectorPosition vector
@@ -100,7 +109,7 @@ public:
    */
   void setVersor(double a, double b);
   /**
-   * @brief calculates the versor which points in the direction goalPosition -
+   * @brief calculates the unit vector which points in the direction goalPosition -
    *currentPosition.
    * It gets the goal position as a parameter and gets the current postition
    *from the last stored

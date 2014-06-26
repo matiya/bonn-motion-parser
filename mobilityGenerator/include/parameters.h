@@ -11,13 +11,13 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#include "anyoption.cpp"
+#include "anyoption.h"
 #include <vector>
 
 #define SINE_ARC_LENGTH 7.64
 #define PI 3.14159265
-#define FILEPATH "../../data/scenario11.movements" //FIXME
-#define FILEPATH1 "../../data/ns_scenario11.movements"
+// #define FILEPATH "../../data/scenario11.movements" //FIXME
+// #define FILEPATH1 "../../data/ns_scenario11.movements"
 
 
 unsigned long SAMPLES_NUMBER, DELTA_X, DELTA_Y, DURATION, SEED, FIELD_SIZE_X, FIELD_SIZE_Y;
@@ -25,6 +25,27 @@ unsigned int PROB, NUM_NODES, LOS;
 double STD_DEVIATION, SPEED_NODES, DOG_SPEED;
 bool verbose;
 std::string FILE_NAME, OBSTACLES_FILE;
+
+/**
+ * @brief Simple 2d vector class
+ * 
+ */
+// class vector2d{
+// public:
+//   vector2d();
+//   double x;
+//   double y;
+//   double getLength(){
+//     return std::sqrt(std::pow(x,2) + std::pow(y,2));
+//   }
+//   double getUnitX(){
+//     return x/getLength();
+//   }
+//   double getUnitY(){
+//     return y/getLength();
+//   }
+// };
+
 
 
 /**
@@ -48,7 +69,6 @@ std::vector<float> readObstaclesFile(std::string obstaclesFile){
     if(f.is_open()){
       while ( std::getline(f,asd, ',') )
       {
-	//std::cout << asd << "\t" << std::stof(asd.c_str()) << std::endl;
 	segment.push_back(std::stof(asd.c_str()));
       }
       if( (segment.size() % 4) != 0)
@@ -96,6 +116,8 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.addUsage( " -y   --yLimit\t\tlimit of the y coordinate (in meters) ");
     cmd.addUsage( " -p   --probability\tprobability of a node of deviating (in per mil)");
     cmd.addUsage( " -D   --deviation\tstandard deviation of the probability distribution which controls the nodes' speed");
+    cmd.addUsage( " -i   --finalx\t\tfinal position in x");
+    cmd.addUsage( " -j   --finaly\t\tfinal position in y");
     cmd.addUsage( " -r   --speed\t\tspeed of the firefighters");
     cmd.addUsage( " -X   --deltaX\t\tamplitude of the sine wave in meters (in meters)");
     cmd.addUsage( " -Y   --deltaY\t\toffset between the firefighters and the dogs (in meters)");
@@ -116,7 +138,9 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.setOption(  "xLimit", 'x' );
     cmd.setOption(  "duration", 'd' ); 
     cmd.setOption(  "probability", 'p' );
-    cmd.setOption(  "deviation", 'D' ); 
+    cmd.setOption(  "deviation", 'D' );
+    cmd.setOption(  "finalx", 'i' ); 
+    cmd.setOption(  "finaly", 'j' ); 
     cmd.setOption(  "deltaX", 'X' ); 
     cmd.setOption(  "deltaY", 'Y' ); 
     cmd.setOption(  "los", 'l' ); 
@@ -272,10 +296,22 @@ std::vector<float> askForParameters( int argc, char **argv){
       STD_DEVIATION = atof(cmd.getValue('D')); 
     }
     else{
-      std::cout << "USING DEFAULT: deviation" << std::endl;
+      std::cout << "[W] USING DEFAULT: deviation" << std::endl;
       STD_DEVIATION = DOG_SPEED/2;     
     }
-     
+    if( cmd.getValue( 'i' ) != NULL  || cmd.getValue( "finalx" ) != NULL  ){
+//       dirVector.x = atof(cmd.getValue('i')); 
+    }
+    else{
+      std::cout << "[W] USING DEFAULT: finalx" << std::endl;
+    }
+    if( cmd.getValue( 'j' ) != NULL  || cmd.getValue( "finaly" ) != NULL  ){
+//       dirVector.y = atof(cmd.getValue('j')); 
+    }
+    else{
+      std::cout << "[W] USING DEFAULT: finaly" << std::endl;
+    }
+
      std::cout << endl ;
     return segment;
 }

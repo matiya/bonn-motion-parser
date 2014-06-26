@@ -83,16 +83,6 @@ install/local: preinstall
 install/local/fast: install/local
 .PHONY : install/local/fast
 
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: install/strip
-.PHONY : install/strip/fast
-
 # Special rule for the target list_install_components
 list_install_components:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
@@ -156,50 +146,125 @@ mobilitygenerator/fast:
 	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/build
 .PHONY : mobilitygenerator/fast
 
-# target to build an object file
-main.o:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/main.o
-.PHONY : main.o
-
-# target to preprocess a source file
-main.i:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/main.i
-.PHONY : main.i
-
-# target to generate assembly for a file
-main.s:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/main.s
-.PHONY : main.s
+src/anyoption.o: src/anyoption.cpp.o
+.PHONY : src/anyoption.o
 
 # target to build an object file
-node.o:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.o
-.PHONY : node.o
+src/anyoption.cpp.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/anyoption.cpp.o
+.PHONY : src/anyoption.cpp.o
+
+src/anyoption.i: src/anyoption.cpp.i
+.PHONY : src/anyoption.i
 
 # target to preprocess a source file
-node.i:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.i
-.PHONY : node.i
+src/anyoption.cpp.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/anyoption.cpp.i
+.PHONY : src/anyoption.cpp.i
+
+src/anyoption.s: src/anyoption.cpp.s
+.PHONY : src/anyoption.s
 
 # target to generate assembly for a file
-node.s:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/node.s
-.PHONY : node.s
+src/anyoption.cpp.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/anyoption.cpp.s
+.PHONY : src/anyoption.cpp.s
+
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
 
 # target to build an object file
-obstacle.o:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.o
-.PHONY : obstacle.o
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-obstacle.i:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.i
-.PHONY : obstacle.i
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-obstacle.s:
-	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/obstacle.s
-.PHONY : obstacle.s
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
+src/node.o: src/node.cpp.o
+.PHONY : src/node.o
+
+# target to build an object file
+src/node.cpp.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/node.cpp.o
+.PHONY : src/node.cpp.o
+
+src/node.i: src/node.cpp.i
+.PHONY : src/node.i
+
+# target to preprocess a source file
+src/node.cpp.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/node.cpp.i
+.PHONY : src/node.cpp.i
+
+src/node.s: src/node.cpp.s
+.PHONY : src/node.s
+
+# target to generate assembly for a file
+src/node.cpp.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/node.cpp.s
+.PHONY : src/node.cpp.s
+
+src/obstacle.o: src/obstacle.cpp.o
+.PHONY : src/obstacle.o
+
+# target to build an object file
+src/obstacle.cpp.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/obstacle.cpp.o
+.PHONY : src/obstacle.cpp.o
+
+src/obstacle.i: src/obstacle.cpp.i
+.PHONY : src/obstacle.i
+
+# target to preprocess a source file
+src/obstacle.cpp.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/obstacle.cpp.i
+.PHONY : src/obstacle.cpp.i
+
+src/obstacle.s: src/obstacle.cpp.s
+.PHONY : src/obstacle.s
+
+# target to generate assembly for a file
+src/obstacle.cpp.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/obstacle.cpp.s
+.PHONY : src/obstacle.cpp.s
+
+src/vector2D.o: src/vector2D.cpp.o
+.PHONY : src/vector2D.o
+
+# target to build an object file
+src/vector2D.cpp.o:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/vector2D.cpp.o
+.PHONY : src/vector2D.cpp.o
+
+src/vector2D.i: src/vector2D.cpp.i
+.PHONY : src/vector2D.i
+
+# target to preprocess a source file
+src/vector2D.cpp.i:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/vector2D.cpp.i
+.PHONY : src/vector2D.cpp.i
+
+src/vector2D.s: src/vector2D.cpp.s
+.PHONY : src/vector2D.s
+
+# target to generate assembly for a file
+src/vector2D.cpp.s:
+	$(MAKE) -f CMakeFiles/mobilitygenerator.dir/build.make CMakeFiles/mobilitygenerator.dir/src/vector2D.cpp.s
+.PHONY : src/vector2D.cpp.s
 
 # Help Target
 help:
@@ -210,19 +275,24 @@ help:
 	@echo "... edit_cache"
 	@echo "... install"
 	@echo "... install/local"
-	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... mobilitygenerator"
 	@echo "... rebuild_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... node.o"
-	@echo "... node.i"
-	@echo "... node.s"
-	@echo "... obstacle.o"
-	@echo "... obstacle.i"
-	@echo "... obstacle.s"
+	@echo "... src/anyoption.o"
+	@echo "... src/anyoption.i"
+	@echo "... src/anyoption.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/node.o"
+	@echo "... src/node.i"
+	@echo "... src/node.s"
+	@echo "... src/obstacle.o"
+	@echo "... src/obstacle.i"
+	@echo "... src/obstacle.s"
+	@echo "... src/vector2D.o"
+	@echo "... src/vector2D.i"
+	@echo "... src/vector2D.s"
 .PHONY : help
 
 

@@ -8,8 +8,10 @@
 #include "node.h"
 
 Node::Node() {
-  // TODO: name here
+    // TODO: name here
+  vectorPosition.reserve(4*SAMPLES_NUMBER + 4 );
 }
+
 
 void Node::setPosition(double x, double y, double t, double s) {
   vectorPosition.push_back(x);
