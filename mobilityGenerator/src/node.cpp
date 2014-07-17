@@ -6,6 +6,7 @@
  * @date 22.02.2014
 */
 #include "node.h"
+#include <iostream>
 
 Node::Node() {
     // TODO: name here
@@ -13,26 +14,38 @@ Node::Node() {
 }
 
 
-void Node::setPosition(double x, double y, double t, double s) {
+void Node::setPosition(double t, double x, double y, double s) {
+  vectorPosition.push_back(t);
   vectorPosition.push_back(x);
   vectorPosition.push_back(y);
-  vectorPosition.push_back(t);
   vectorPosition.push_back(s);
 }
 
+/**
+ * @brief calculate the unit vector which points in the direction goalPosition - currentPosition
+ * @param goalPosX 
+ * @param goalPosY ...
+ * @return void
+ */
 void Node::calcVersor(double goalPosX, double goalPosY) {
-  /*calculate the versor which points in the direction goalPosition -
-   * currentPosition*/
   double xDir = goalPosX - *(vectorPosition.end() - 3);
   double yDir = goalPosY - *(vectorPosition.end() - 2);
-  setVersor(xDir / std::sqrt(std::pow(xDir, 2) + std::pow(yDir, 2)),
-            yDir / std::sqrt(std::pow(xDir, 2) + std::pow(yDir, 2)));
-  *(nextPosition.begin()) = goalPosX;
-  *(nextPosition.begin() + 1) = goalPosY;
+  double length = std::sqrt(std::pow(xDir, 2) + std::pow(yDir, 2));
+  if (length == 0){
+    setVersor(0, 0);
+  }
+  else{
+    setVersor(xDir / length, yDir / length);
+    nextPosition[0] = goalPosX;
+    nextPosition[1] = goalPosY;
+  }
 }
+
+
+
 void Node::setVersor(double a, double b) {
-  *(versor.begin()) = a;
-  *(versor.begin() + 1) = b;
+  versor[0] = a;
+  versor[1] = b;
 }
 
 const std::vector<double> Node::getPosition() { return vectorPosition; }

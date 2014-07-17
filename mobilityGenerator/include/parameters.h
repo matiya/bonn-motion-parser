@@ -11,41 +11,34 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#include "anyoption.h"
 #include <vector>
+#include <cmath>
+#include "anyoption.h"
+#include "vector2D.h"
 
 #define SINE_ARC_LENGTH 7.64
 #define PI 3.14159265
-// #define FILEPATH "../../data/scenario11.movements" //FIXME
-// #define FILEPATH1 "../../data/ns_scenario11.movements"
 
-
-unsigned long SAMPLES_NUMBER, DELTA_X, DELTA_Y, DURATION, SEED, FIELD_SIZE_X, FIELD_SIZE_Y;
-unsigned int PROB, NUM_NODES, LOS;
-double STD_DEVIATION, SPEED_NODES, DOG_SPEED;
+Vector2D finalPosition;
+unsigned long SAMPLES_NUMBER;
+unsigned long DELTA_X;
+unsigned long DELTA_Y;
+unsigned long DURATION;
+unsigned long SEED;
+unsigned long FIELD_SIZE_X;
+unsigned long FIELD_SIZE_Y;
+unsigned int PROB;
+unsigned int NUM_NODES;
+unsigned int LOS;
+double STD_DEVIATION;
+double SPEED_NODES; 
+double DOG_SPEED;
+double INITIAL_X;
+double INITIAL_Y;
+double ANGLE;
 bool verbose;
-std::string FILE_NAME, OBSTACLES_FILE;
-
-/**
- * @brief Simple 2d vector class
- * 
- */
-// class vector2d{
-// public:
-//   vector2d();
-//   double x;
-//   double y;
-//   double getLength(){
-//     return std::sqrt(std::pow(x,2) + std::pow(y,2));
-//   }
-//   double getUnitX(){
-//     return x/getLength();
-//   }
-//   double getUnitY(){
-//     return y/getLength();
-//   }
-// };
-
+std::string FILE_NAME; 
+std::string OBSTACLES_FILE;
 
 
 /**
@@ -63,7 +56,7 @@ std::vector<float> readObstaclesFile(std::string obstaclesFile){
   /*Check that the obstacle file exist*/
   if(!f.good()){
     std::cout << "[E] Obstacle file does not exist. " << std::endl;
-    std::terminate();
+    exit(-1);
   }
   else{
     if(f.is_open()){
@@ -74,13 +67,13 @@ std::vector<float> readObstaclesFile(std::string obstaclesFile){
       if( (segment.size() % 4) != 0)
       {
 	std::cout << "[E] Incorrect format of obstacles." << std::endl;
-	std::terminate();
+	exit(-1);
       }
       std::cout << "[I] Read "<< segment.size()/4 << " obstacles. "<<std::endl;    
     }
     else{
       std::cout <<"[E] Could not open obstacle file: " << obstaclesFile << "." << std::endl;
-      std::terminate();
+      exit(-1);
     }
     f.close();
   }
@@ -116,6 +109,8 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.addUsage( " -y   --yLimit\t\tlimit of the y coordinate (in meters) ");
     cmd.addUsage( " -p   --probability\tprobability of a node of deviating (in per mil)");
     cmd.addUsage( " -D   --deviation\tstandard deviation of the probability distribution which controls the nodes' speed");
+    cmd.addUsage( " -I   --startx\t\tinitial position in x");
+    cmd.addUsage( " -J   --starty\t\tinitial position in y");
     cmd.addUsage( " -i   --finalx\t\tfinal position in x");
     cmd.addUsage( " -j   --finaly\t\tfinal position in y");
     cmd.addUsage( " -r   --speed\t\tspeed of the firefighters");
@@ -139,6 +134,8 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.setOption(  "duration", 'd' ); 
     cmd.setOption(  "probability", 'p' );
     cmd.setOption(  "deviation", 'D' );
+    cmd.setOption(  "initialx", 'I' ); 
+    cmd.setOption(  "initialy", 'J' ); 
     cmd.setOption(  "finalx", 'i' ); 
     cmd.setOption(  "finaly", 'j' ); 
     cmd.setOption(  "deltaX", 'X' ); 
@@ -163,7 +160,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     
     if( ! cmd.hasOptions()) { /* print usage if no options */
 	    cmd.printUsage();
-	    std::terminate();   
+	    exit(-1);
     }
 
     /* 6. GET THE VALUES */
@@ -179,7 +176,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     else{
       std::cout << "[E] REQUIRED: number of samples" << std::endl;
       std::cout << endl ;
-      std::terminate();   
+      exit(-1);
     }
     
     if( cmd.getValue( 'y' ) != NULL  || cmd.getValue( "yLimit" ) != NULL  ){
@@ -203,8 +200,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     }
     else{
       std::cout << "[E] REQUIRED: number of nodes" << std::endl;
-      std::cout << endl ;
-      std::terminate();
+      exit(-1);
     }
    
     if( cmd.getValue( 'r' ) != NULL  || cmd.getValue( "speed" ) != NULL  ){
@@ -212,7 +208,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     }
     else{
       std::cout << "[W] USING DEFAULT: speed = 1.4m/s" << std::endl;
-      SPEED_NODES = 1.4;      
+      SPEED_NODES = 1.4;
     }
     
     if( cmd.getValue( 'd' ) != NULL  || cmd.getValue( "duration" ) != NULL  ){
@@ -289,8 +285,8 @@ std::vector<float> askForParameters( int argc, char **argv){
 		   "    The average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
      if(DOG_SPEED > 13.6){
       std::cout << "[E] Average speed of dogs surpasses the maximum of 13.6m/s" << 
-		    "\nDeacrease either deltaX or the speed." << std::endl;
-      std::terminate();   
+		    "\n    Decrease either deltaX or the speed." << std::endl;
+      exit(-1);
      }
     if( cmd.getValue( 'D' ) != NULL  || cmd.getValue( "deviation" ) != NULL  ){
       STD_DEVIATION = atof(cmd.getValue('D')); 
@@ -299,21 +295,28 @@ std::vector<float> askForParameters( int argc, char **argv){
       std::cout << "[W] USING DEFAULT: deviation" << std::endl;
       STD_DEVIATION = DOG_SPEED/2;     
     }
-    if( cmd.getValue( 'i' ) != NULL  || cmd.getValue( "finalx" ) != NULL  ){
-//       dirVector.x = atof(cmd.getValue('i')); 
+    if( cmd.getValue( 'I' ) != NULL  || cmd.getValue( "initialx" ) != NULL  ){
+      INITIAL_X = atof(cmd.getValue('I')); 
     }
-    else{
-      std::cout << "[W] USING DEFAULT: finalx" << std::endl;
+    if( cmd.getValue( 'J' ) != NULL  || cmd.getValue( "initialy" ) != NULL  ){
+      INITIAL_Y = atof(cmd.getValue('J')); 
+    }
+    if( cmd.getValue( 'i' ) != NULL  || cmd.getValue( "finalx" ) != NULL  ){
+      finalPosition.x = atof(cmd.getValue('i')); 
     }
     if( cmd.getValue( 'j' ) != NULL  || cmd.getValue( "finaly" ) != NULL  ){
-//       dirVector.y = atof(cmd.getValue('j')); 
-    }
-    else{
-      std::cout << "[W] USING DEFAULT: finaly" << std::endl;
+      finalPosition.y = atof(cmd.getValue('j')); 
     }
 
-     std::cout << endl ;
+    /* get angle from origin to final position*/ //FIXME: take into account start position
+     ANGLE = std::atan2(finalPosition.y, finalPosition.x);
+     if(INITIAL_X == 0 and INITIAL_Y == 0)
+       std::cout << "[W] USING DEFAULT: initial position (0,0) " << std::endl;
+     std::cout << "[I] The nodes will travel with an angle from the x axis of: " << 
+		  ANGLE*360/(2*PI)  << "°" << std::endl;
+    ANGLE -= PI/2;
     return segment;
+    
 }
 
 #endif//PARAMETERS.H

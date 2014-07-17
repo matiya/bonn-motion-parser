@@ -20,10 +20,10 @@ from matplotlib import animation
 
 def allNodes(fileName):
   """plots all the nodes, the input is the decompressed file produced by bm"""
-  print(fileName)
+  #print(fileName)
   f = open(str(fileName[0]),'r')
   obsf = open(str(fileName[1]),'r')
-  
+
   i = 0
   j = 0
   k = 0
@@ -37,7 +37,6 @@ def allNodes(fileName):
     j=0
     for element in line.strip().split(','):
       if(j%2==0):
-        print(type(element))
         try:
           dataObs.append( float(element) )
         except:
@@ -52,8 +51,8 @@ def allNodes(fileName):
   for k in range(len(dataObs)):
     if k%2==0:
       plt.plot(dataObs[k:k+2],dataObs1[k:k+2], lw = 3)
-      
-  
+
+
   print("totalNodes: "+str(len(nodes)))
   n = len(nodes)
   nodeContainer = [] #contains all the nodes
@@ -78,15 +77,22 @@ def allNodes(fileName):
       indexOfCoords += 4
       i += 1
     indexOfNodes += 1
-    
+
   return nodeContainer, n
+
+#pause graph when clicking inside it
+def onClick(event):
+    global pause
+    if pause:
+        pause = False
+    else:
+        pause = True
 
 # initialization function: plot the background of each frame
 def init():
     for line in lineList:
         line.set_data([], [])
-    #line.set_data([], [])
-    #line2.set_data([], [])
+    time_text.set_text('')
     return lineList
 
 # animation function.  This is called sequentially
@@ -105,23 +111,29 @@ def animate(i):
     for a in range(nro):
       lineList[a].set_data(data[c],data[c+1])
       c+=2
-    #line.set_data(data[0], data[1])
-    return lineList 
+    time_text.set_text('time = %.1f' % points[a][j][0])
+#    return (lineList[0], time_text)
+    return lineList
+
 
 if __name__ == "__main__":
+  pause = False
   fig = plt.figure()
-  ax = plt.axes(xlim=(0, 1000), ylim=(0, 1000))
+  ax = plt.axes(xlim=(-500, 500), ylim=(-500, 500))
   ax.grid()
+  fig.canvas.mpl_connect('button_press_event', onClick)
   lineList = []
   points, nro = allNodes(["/home/default/workspace/repos/python/bonn-motion-parser/data/sc0",
                           "/home/default/workspace/repos/python/bonn-motion-parser/temp/obs"])
   for i in range(nro):
     linea, = ax.plot([], [], lw=2)
     lineList.append(linea)
-  anim = animation.FuncAnimation(fig, animate, init_func=init,
+  time_text = ax.text(0.02, 0.95, '', transform=ax.transAxes)
+
+anim = animation.FuncAnimation(fig, animate, init_func=init,
                                  frames=900, interval=20, blit=True,
                                  repeat = True)
-  plt.show()
+plt.show()
 
 # save the animation as an mp4.  This requires ffmpeg or mencoder to be
 # installed.  The extra_args ensure that the x264 codec is used, so that

@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <vector>
+#include "vector2D.h"
 
 extern unsigned long SAMPLES_NUMBER;
 /**
@@ -68,7 +69,7 @@ public:
    *speeding up.
    *
    */
-  double alteredSpeed;
+  double alteredSpeed = 0;
   /**
    * @brief time in senconds the nodes' speed is altered
    *
@@ -80,7 +81,27 @@ public:
    *
    */
   double xDeviation = 0;
-
+  /**
+   * @brief Time to wait before the node can go into the ASTRAY state again.
+   * The idea behind this is that the node can't get into the ASTRAY state twice
+   * in a row, as it would be unlikely that a dog that returns to its handle would
+   * go astray again after a couple of seconds.
+   * 
+   */
+  double refractoryPeriod = 0;
+  /**
+   * @brief Time variable that helps the node's remember where in the sine wave
+   * they left off when the later has to be interrupted (i.e. the dogs swerve or
+   * slow down)
+   * 
+   */
+  double scaleSine = 0;
+  
+  /**
+   * @brief Firefighters use this vector to store the angle of movement.
+   * 
+   */
+  Vector2D directionVector;
 
   /**
    * @brief appends data to the vectorPosition vector
@@ -91,7 +112,7 @@ public:
    * @param t time
    * @return void
    */
-  void setPosition(double x, double y, double t, double s);
+  void setPosition(double t, double x, double y, double s);
   /**
    * @brief writes into the versor vector a versor that points in
    * the direction from current position to the next position.
@@ -115,7 +136,6 @@ public:
    * @return void
    */
   void calcVersor(double goalPosX, double goalPosY);
-
   /**
    * @brief returns the vectorPosition vector
    *

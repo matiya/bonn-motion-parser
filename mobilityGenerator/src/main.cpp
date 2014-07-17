@@ -4,8 +4,9 @@
  * @version
  * @brief Simulates the movement of a rescue team
  * @date 22.02.2014
- * @bugs: put the name of the nodes in the class constructor so that the two
- * swithces can be avoided
+ * @bugs: * put the name of the nodes in the class constructor so that the two
+ * 	    switches can be avoided
+ *	  * Update sineScale according to ff position
 */
 
 /**
@@ -25,12 +26,12 @@
 #include "parameters.h"
 #include "vector2D.h"
 
-#define POS_X 000
+#define POS_X 1000
 #define POS_Y 1000
 
 
-Vector2D prueba(POS_X, POS_Y);
-
+/*temp variables*/
+double angulo, lx, ly, t, px, py, velY;
 
 /**
  * @brief returns a random integer between 0 and n
@@ -38,10 +39,18 @@ Vector2D prueba(POS_X, POS_Y);
  * @param n ...
  * @return int
  */
-int random_integer(std::mt19937 &generator, int n) {
+int random_integer(std::mt19937 &generator, int n) 
+{
   std::uniform_int_distribution<int> dist_n(0, n);
   return dist_n(generator);
 }
+
+float random_float(std::mt19937 &generator, float n) 
+{
+  std::uniform_real_distribution<float> dist_n(0, n);
+  return dist_n(generator);
+}
+
 
 /**
   * @brief returns a random double drawn from a normal distribution
@@ -52,8 +61,8 @@ int random_integer(std::mt19937 &generator, int n) {
   * @return double random positive double
   */
 double normal_integer(std::default_random_engine &generator, double mean,
-                      double stdDeviation) {
-
+                      double stdDeviation) 
+{
   std::normal_distribution<double> distribution(mean, stdDeviation);
   return std::abs(distribution(generator));
 }
@@ -63,8 +72,8 @@ double normal_integer(std::default_random_engine &generator, double mean,
  * 
  * @return double
  */
-double distanceBetween2Points(const double x1, const double y1, const double x2, const double y2){
-  
+double distanceBetween2Points(const double x1, const double y1, const double x2, const double y2)
+{
   return std::sqrt( std::pow(x1 - x2, 2) + std::pow(y1 - y2,2));
 }
 
@@ -87,8 +96,8 @@ double distanceBetween2Points(const double x1, const double y1, const double x2,
  * @bug change obstacles to polygons
  */
 Obstacle::vertex calcClosestVertex(Node firefighter, Obstacle *obstacle,
-                                   unsigned int q, unsigned int i) {
-
+                                   unsigned int q, unsigned int i) 
+{
   Obstacle::linePointParameters distanceStruct;
   Obstacle::vertex vertex, tempVertex;
   vertex =
@@ -152,7 +161,8 @@ Obstacle::vertex calcClosestVertex(Node firefighter, Obstacle *obstacle,
    * @param dog nodes
    * @return void
    */
-  void outputToFile( Node *ff, Node *dog){
+void outputToFile( Node *ff, Node *dog)
+{
   int k = 0;
 
   /*check if file exists already, if it does, create a new one appending
@@ -217,40 +227,49 @@ Obstacle::vertex calcClosestVertex(Node firefighter, Obstacle *obstacle,
   resultsFile.close();
 }
 
-//FIXME: Erase
-// std::vector<double> calcDirection(){
-//   std::vector<double> dirVec;
-//   float magnitude = std::sqrt(std::pow(POS_X, 2) + std::pow(POS_Y,2) );
-//   dirVec.push_back(POS_X/magnitude);
-//   dirVec.push_back(POS_Y/magnitude);
-//   std::cout << "vector: " << dirVec.front() << ", " << dirVec.back() << std::endl;
-//   return dirVec;
-// }
+float calcSpeedDogs( );
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   
-  int k = 0; 					/*Index appended to file name*/
+  /*Index appended to file name*/
+  int k = 0; 					
+  /*vector with the obstacles' vertices*/
   std::vector<float> segment =
-      askForParameters(argc, argv);	 	/*vector with the obstacles' vertices*/
+      askForParameters(argc, argv);	 	
+  /*number of obstacles*/
   const unsigned int obstaclesNumber =
-      segment.size() / 4; 			/*number of obstacles*/
-  double time = 0;        			/*time of the simulation*/
-  double prevPosYFF = 0, 
-	 prevPosXFF = 0, 
-	 prevPosXD = 0,
-         prevPosYD = 0; 			/*previous position of node*/
-  double yDeviation = 0,
-         xDeviation = 0;            		/*node random deviation along x and y axis*/
-  double dogSpeed = 0, ffSpeed = 0; 		/*speed of nodes*/
+      segment.size() / 4; 			
+  /*time of the simulation*/
+  double time = 0;
+  /*previous position of node*/
+  double prevPosYFF = 0;
+  double prevPosXFF = 0;
+  double prevPosXD = 0;
+  double prevPosYD = 0;
+  /*previous speed of dog*/
+  double prevDogSpeed = 0;
+  /*node random deviation along x and y axis*/
+  double yDeviation = 0;
+  double xDeviation = 0;
+  /*speed of nodes*/
+  double dogSpeed = 0;
+  double ffSpeed = 0; 				
+  /*min and max speed change per turn*/
+  double minVarSpeed = 0;
+  double maxVarSpeed = 0;
+  /*structure with info about the obstacles' position*/
   Obstacle::linePointParameters
-  distanceToPoint; /*structure with info about the obstacles' position*/
-  Obstacle::vertex
-  closestVertex; /*closest vertex a node will head to avoid an obstacle*/
+  distanceToPoint; 
+  /*closest vertex a node will head to avoid an obstacle*/
+  Obstacle::vertex closestVertex; 
+  /*distance between nodes*/
   const double rfDist =
-      (double)FIELD_SIZE_X / NUM_NODES; /*distance between nodes*/
+      (double)FIELD_SIZE_X / NUM_NODES; 
+  /*each cycle the simulation time will
+      be increased by this quantity*/
   const double timeStep =
-      (double)DURATION / SAMPLES_NUMBER; /*each cycle the simulation time will
-                                            be increased by this quantity*/
+      (double)DURATION / SAMPLES_NUMBER; 
 
   /*create the seed for the random number generator
    * if the user didn't specify a seed, then a random one
@@ -276,9 +295,15 @@ int main(int argc, char **argv) {
   }
   /*set the intial positions and speed of the nodes*/
   for (int i = 0; i < NUM_NODES; i++) {
-    dog[i].setPosition(0, DELTA_X + i * rfDist, 0, SPEED_NODES);
+    dog[i].setPosition(0, 
+		       INITIAL_X + DELTA_X + i * rfDist, 
+		       INITIAL_Y, 
+		       SPEED_NODES);
     dog[i].state = SINE;
-    firefighter[i].setPosition(0, DELTA_X + i * rfDist, 0, SPEED_NODES);
+    firefighter[i].setPosition(0, 
+			       INITIAL_X + DELTA_X + i * rfDist, 
+			       INITIAL_Y, 
+			       SPEED_NODES); //FIXME: spread evenly along y axis when angle = 0
     firefighter[i].state = LINEAR;
   }
   std::cout << "[I] Timestep: " << timeStep << std::endl;
@@ -288,22 +313,20 @@ int main(int argc, char **argv) {
     /*increase time counter*/
     time += timeStep;
     /*load position at t-1 from the corresponding node's vectorPosition*/
-    for (int i = 0; i < NUM_NODES; i++) {
-      int temp = 0;
+    for (int i = 0; i < NUM_NODES; i++){
       try {
         prevPosYFF = *(firefighter[i].getPosition().end() - 2);
         prevPosXFF = *(firefighter[i].getPosition().end() - 3);
         prevPosXD = *(dog[i].getPosition().end() - 3);
         prevPosYD = *(dog[i].getPosition().end() - 2);
+	prevDogSpeed = dog[i].getPosition().back();
       }
       catch (std::exception &e) {
         std::cout << "ERROR: accesing previous positions" << std::endl;
       }
-
       /*calculate distance from node to obstacle and set status to avoid in case
        * it lies within line of sight and directly ahead*/
-      if (obstaclesNumber !=
-          0 /* && dog[i].state == SINE && firefighter[i].state == LINEAR*/) {
+      if (obstaclesNumber !=0) {
         for (int j = 0; j < obstaclesNumber; j++) {
           distanceToPoint =
               obstacle[j].getDistanceToPoint(prevPosXFF, prevPosYFF);
@@ -344,52 +367,85 @@ int main(int argc, char **argv) {
           }
         }
       }
-
+// //       std::cout << "time: " << time << "\node: " << i << "\tstate: " << dog[i].state << std::endl;
+      /*Get the maximum and minimum variation of the speed*/
+      if(time > timeStep and STD_DEVIATION != 0){
+	minVarSpeed = ( (time - timeStep) * prevDogSpeed) / time;
+	maxVarSpeed = (prevDogSpeed - minVarSpeed) + prevDogSpeed;
+      }
+      else{
+	minVarSpeed = DOG_SPEED - STD_DEVIATION;
+	maxVarSpeed = DOG_SPEED + STD_DEVIATION;
+      }
+      /*The node's speed has been changed, they are either speeding up or
+       slowing down for a fixed amount of time*/
       if (firefighter[i].powerUpTime > 0) {
         firefighter[i].powerUpTime -= timeStep;
         ffSpeed = normal_integer(gen2, firefighter[i].alteredSpeed,
                                  STD_DEVIATION / 10);
-        dogSpeed = normal_integer(gen2, dog[i].alteredSpeed, STD_DEVIATION);
-      } else {
-        /*Calculate random probability of node slowing down or speeding up given
-         * a random time*/
-        if (random_integer(gen, 100) < 5) {
-          double randomSpeed = random_integer(gen, 2) - 1; 
-          firefighter[i].alteredSpeed =
+	do{
+	  dogSpeed = normal_integer(gen2, dog[i].alteredSpeed, STD_DEVIATION);
+	}while ( dogSpeed < minVarSpeed or 
+		 dogSpeed > maxVarSpeed or
+	         dogSpeed > DOG_SPEED + STD_DEVIATION  or
+	         dogSpeed < DOG_SPEED - STD_DEVIATION
+	       );//see note below
+      } 
+      else {
+        /*With a probability of 5% a node will slow down or speed up
+	 * by a factor of up to plus minus STD_DEVIATION during a random time 
+	 * no larger than 50 seconds.
+	 */
+        if (random_integer(gen, 100) < 5 and time > timeStep) {
+	  do{  
+	  double randomSpeed = random_float(gen, 2*STD_DEVIATION) - STD_DEVIATION; 
+	  firefighter[i].alteredSpeed =
               normal_integer(gen2, SPEED_NODES, STD_DEVIATION / 10) +
-              randomSpeed;
+              randomSpeed / 4;
           dog[i].alteredSpeed =
               normal_integer(gen2, DOG_SPEED, STD_DEVIATION) + randomSpeed;
           firefighter[i].powerUpTime =
-              random_integer(gen, 50); 
-        }
-
-        /*calculate speed of dogs*/
+              random_integer(gen, 50);
+	  }while (dog[i].alteredSpeed < minVarSpeed or 
+		  dog[i].alteredSpeed > maxVarSpeed or 
+		  dog[i].alteredSpeed > DOG_SPEED + STD_DEVIATION or
+		  dog[i].alteredSpeed < DOG_SPEED - STD_DEVIATION
+		 );//see note below
+      }
+        /*calculate speed of dogs, taking into account that change of speed shouldn't be
+	 too abrupt nor should it exceed the given DOG_SPEED + STD_DEVIATION*/
         do {
-          dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
-        } while (dogSpeed > DOG_SPEED + STD_DEVIATION);
-	/*dog is far ahead of ff, decrease the speed so ff can catch up*/
-	  if((prevPosYD-prevPosYFF) > 5){
-	    dogSpeed *= 0.5;
-	    dog[i].alteredSpeed *= 0.5;
+	  dogSpeed = normal_integer(gen2, DOG_SPEED, STD_DEVIATION);
+// 	  dogSpeed += (dogSpeed - prevDogSpeed) / prevDogSpeed; //FIXME: add
+	  } while (dogSpeed < minVarSpeed or 
+		   dogSpeed > maxVarSpeed or
+	           dogSpeed > DOG_SPEED + STD_DEVIATION  or
+	           dogSpeed < DOG_SPEED - STD_DEVIATION 
+		  );
+ 	/*dog is far ahead of ff, decrease the speed so ff can catch up*/
+ 	if((prevPosYD-prevPosYFF) > 10){
+	  if( minVarSpeed <= DOG_SPEED - STD_DEVIATION){
+	    dogSpeed = maxVarSpeed;
+	    dog[i].alteredSpeed = maxVarSpeed;
+	  } else {
+	    dogSpeed = minVarSpeed;
+	    dog[i].alteredSpeed = minVarSpeed;
 	  }
-	  else if((prevPosYD-prevPosYFF) > 10){
-	    dogSpeed *= 0.5;
-	    dog[i].alteredSpeed *= 0.5;
-	  }
+ 	}
 
         /*calculate speed of ff*/
         ffSpeed = normal_integer(gen2, SPEED_NODES, STD_DEVIATION / 10);
 
         /*issue a warning if the speed of the firefigther is unrealistic*/
-        if (ffSpeed > 1.5 * 1.2) { // 20% over average walking speed
-          std::cout << "[W] Firefighter " << i << " is moving at " << ffSpeed
-                    << "m/s.\nThis is higher than the average of 1.4m/s"
+        if (ffSpeed > 1.4 * 1.2) { // 20% over average walking speed
+          std::cout << "[W] (@ " << time <<"s) Firefighter " << i << " is moving at " << ffSpeed
+                    << "m/s.\n    This is higher than the average of 1.4m/s"
                     << std::endl;
         }
       }
-      Vector2D directionVector(0, ffSpeed*timeStep);
-      Vector2D directionVectord;
+      /*Indicate the original movement of firefighter, i.e. to the right*/
+      firefighter[i].directionVector.x = ffSpeed*timeStep;
+      firefighter[i].directionVector.y = 0; //FIXME: make this coherent with the rest
       /*update position of firefighters*/
 
       /*flags to indicate whether or not a node can return
@@ -404,10 +460,7 @@ int main(int argc, char **argv) {
        */
       case LINEAR:
         if (random_integer(gen, 1000) < PROB) {
-          do {
-            xDeviation = random_integer(gen, 200) / 100; 
-          } while ((xDeviation +
-                    prevPosXFF)<0 or(xDeviation + prevPosXFF)> FIELD_SIZE_X);
+	  xDeviation = random_integer(gen, 200) / 100; 
           if (firefighter[i].xDeviation >= 0 && (-xDeviation + prevPosXFF) > 0)
             xDeviation = -1 * std::abs(xDeviation);
           else if (firefighter[i].xDeviation < 0)
@@ -416,23 +469,17 @@ int main(int argc, char **argv) {
         } else {
           xDeviation = 0;
         }
-        
-        /*directionVector.x = POS_X;
-	directionVector.y = POS_Y;
-	directionVector.Normalize();
-	*/
-	//ROTAR LINEAR
-	
-	directionVector.Rotate(prueba.angle + 4.71238898038469); //add 270°
-	
-	
-        firefighter[i].setPosition(time, prevPosXFF + directionVector.x /*+ xDeviation + dirVec.front()*ffSpeed*timeStep*/, 
-                                   prevPosYFF +  directionVector.y /*timeStep * ffSpeed*/, ffSpeed);
+	firefighter[i].directionVector.Rotate(ANGLE + PI/2);
+        firefighter[i].setPosition(time, 
+				   prevPosXFF + firefighter[i].directionVector.x,
+                                   prevPosYFF +  firefighter[i].directionVector.y, 
+				   ffSpeed);
 
         break;
 
       /*When the FF is avoiding an obstacle, it heads into the vertex previously
-       * calculated in the calcClosestVertex*/
+       *calculated in the calcClosestVertex
+       */
       case AVOIDING_OBSTACLE:
         /*check if current position is close to goal position*/
 	if( distanceBetween2Points( firefighter[i].getNextPosition()[0], firefighter[i].getNextPosition()[1],
@@ -445,10 +492,9 @@ int main(int argc, char **argv) {
           firefighter[i].state = LINEAR_AVOIDING_OBSTACLE;
         }
         firefighter[i].setPosition(
-            time, prevPosXFF + *(firefighter[i].getVersor().begin()) *
-                                   timeStep * ffSpeed,
-            prevPosYFF +
-                *(firefighter[i].getVersor().begin() + 1) * timeStep * ffSpeed,
+            time, 
+	    prevPosXFF + *(firefighter[i].getVersor().begin()) * timeStep * ffSpeed,
+            prevPosYFF + *(firefighter[i].getVersor().begin() + 1) * timeStep * ffSpeed,
             ffSpeed);
         break;
 
@@ -456,6 +502,7 @@ int main(int argc, char **argv) {
        *there are no obstacles
        *that could interfer the way back to the original position.*/
       case LINEAR_AVOIDING_OBSTACLE:
+      std::cout << "time: " << time << "\a123123: " << i << std::endl;
         for (int j = 0; j < obstaclesNumber; j++) {
           distanceToPoint =
               obstacle[j].getDistanceToPoint(prevPosXFF, prevPosYFF);
@@ -506,8 +553,10 @@ int main(int argc, char **argv) {
                                     prevPosYFF);
           firefighter[i].state = RETURNING;
         }
-        firefighter[i].setPosition(time, prevPosXFF,
-                                   prevPosYFF + timeStep * ffSpeed, ffSpeed);
+        firefighter[i].setPosition(time, 
+				   prevPosXFF,
+                                   prevPosYFF + timeStep * ffSpeed, 
+				   ffSpeed);
         break;
 
       /*When the node has reached the goal position that allows it to avoid an
@@ -525,7 +574,8 @@ int main(int argc, char **argv) {
           firefighter[i].state = LINEAR;
         }
         firefighter[i].setPosition(
-            time, prevPosXFF + *(firefighter[i].getVersor().begin()) *
+            time, 
+	    prevPosXFF + *(firefighter[i].getVersor().begin()) *
                                    timeStep * ffSpeed,
             prevPosYFF +
                 *(firefighter[i].getVersor().begin() + 1) * timeStep * ffSpeed,
@@ -536,62 +586,113 @@ int main(int argc, char **argv) {
       switch (dog[i].state) {
       /*The dog moves following a sine wave*/
       case SINE:
-        if (random_integer(gen, 1000) < PROB) {
+        if (random_integer(gen, 1000) < PROB and
+	    time - dog[i].refractoryPeriod > 10) {
           dog[i].state = ASTRAY;
-          if (verbose) {
+          if (verbose) 
             std::cout << "[I] (@" << time << "s dog[" << i
                       << "] has gone astray"
-                      << "\n"
-                      << "current pos: (" << prevPosXD << "," << prevPosYD
-                      << ")" << std::endl;
-          }
+                      << std::endl;
           /*calculate new random position, making sure it doesn't go out of
            * bounds and that the new position doesn't lie within line of sight*/
           do {
             yDeviation =
-                random_integer(gen, 200) - 100; // FIXME: are these limits ok?
-            xDeviation = random_integer(gen, 200) - 100;
-          } while ((yDeviation + prevPosYD) <0 
-		   or(xDeviation + prevPosXD)<0 
-                   or(xDeviation + prevPosXD)> FIELD_SIZE_X
-		   or distanceBetween2Points (xDeviation + prevPosXD, yDeviation + prevPosYD,
-					      prevPosXD, prevPosYD) < 80);
+                random_float(gen, 200) - 100; 
+            xDeviation = random_float(gen, 200) - 100;
+          } while ( /*(xDeviation + prevPosXD)> FIELD_SIZE_X or*/ //FIXME: Put meaninful field limits
+		   distanceBetween2Points (xDeviation + prevPosXD, yDeviation + prevPosYD,
+					      prevPosXD, prevPosYD) < LOS);
 	  /*issue a warning when the nodes leave the preset area*/
-          if ((yDeviation + prevPosYD) > FIELD_SIZE_Y) {
-            std::cout << "[W] Y limit exceeded @ " << time << "s by dog " << i
-                      << std::endl;
-          }
+          /*if ((yDeviation + prevPosYD) > FIELD_SIZE_Y) {     //FIXME: This doesn't do much*/
+          /*  std::cout << "[W] Y limit exceeded @ " << time << "s by dog " << i            */
+          /*            << std::endl;                                                       */
+          /*}                                                                               */
 
           /*calculate the unit vector that points in the direction of the deviation*/
           dog[i].calcVersor(xDeviation + prevPosXD, yDeviation + prevPosYD);
           if (verbose) {
-            std::cout << "next pos: (" << xDeviation + prevPosXD << ","
-                      << yDeviation + prevPosYD << ")" << std::endl;
-            std::cout << "versor: (" << *(dog[i].getVersor().begin()) << ","
-                      << *(dog[i].getVersor().begin() + 1) << ")\n"
+	    std::cout << "    (" << prevPosXD <<"," << prevPosYD << ") -> ( "
+		      << xDeviation + prevPosXD << ","
+                      << yDeviation + prevPosYD << ") @ (" 
+		      << *(dog[i].getVersor().begin()) << ","
+                      << *(dog[i].getVersor().begin() + 1) << ")"
                       << std::endl;
           }
         } else {
-          dog[i].calcVersor(
-              *(dog[i].getPosition().begin() + 1) +
-                  DELTA_X * std::cos((prevPosYD + timeStep * SPEED_NODES) /8),
-                  // FIXME: the eight affects the freq of the sine
-              prevPosYD/*FF*/ + timeStep * SPEED_NODES + DELTA_Y);
+
+	  /*if dog is departed from firefighter catch up*/
+// 	  if( distanceBetween2Points(prevPosXD, prevPosYD, prevPosXFF, prevPosYFF) > DELTA_X /*+ 15*/){
+// 	    if(time > 20 and time < 50 and i == 1){
+// 	      std::cout << "Dposx: " << prevPosXD << "\t\tDposy: " << prevPosYD << std::endl;
+// 	      std::cout << "Fposx: " << prevPosXFF << "\t\tFposy: " << prevPosYFF << std::endl;
+// 	      std::cout << "angle: " << ANGLE << std::endl;
+// 	    }
+	    /*going up*/
+// 	    if(ANGLE > 0)
+// 	      if(prevPosYD > prevPosXFF)
+// 		dog[i].scaleSine += 0;
+// 	      else if( prevPosYD < prevPosXFF)
+// 		dog[i].scaleSine += 1.5*timeStep;
+// 	      
+// 	    /*going right*/
+// 	    if(ANGLE == 0)
+// 	      if(prevPosXD > prevPosXFF)
+// 		dog[i].scaleSine += 0;
+// 	      else if(prevPosXD < prevPosXFF)
+// 		dog[i].scaleSine += 1.5*timeStep;
+// 	      
+// 	    /*going down*/
+// 	    if(ANGLE < 0)
+// 	      if( (prevPosYD + DELTA_X) > prevPosYFF){
+// 		dog[i].scaleSine += 1.5*timeStep;
+// 	      }
+// 	      else if( (prevPosYD + 100) < prevPosYFF)
+// 		dog[i].scaleSine += 0;
+// 	    /*going left*/
+// 	    if(abs (ANGLE- PI) < 0.1)
+// 	      if(prevPosXD > prevPosXFF)
+// 		dog[i].scaleSine += 1.5*timeStep;
+// 	      else if(prevPosXD < prevPosXFF)
+// 		dog[i].scaleSine += 0;
+// 	  } else{
+	    dog[i].scaleSine += timeStep; 
+// 	  }
+	  //FIXME: This is set based on sheer experience
+	  py = dog[i].scaleSine * dogSpeed * 0.2;
+	  px = DELTA_X * std::sin(py/8);
+	  
+	  /*rotate the sine, and translate if it's not in the origin*/
+	  lx = px * std::cos(ANGLE) - py * std::sin(ANGLE) + dog[i].getPosition()[1];
+	  ly = px * std::sin(ANGLE) + py * std::cos(ANGLE) + dog[i].getPosition()[2];
+	  	  
+	  dog[i].calcVersor(lx, ly);
+// 	  if( time > 291){
+// 	    std::cout <<"\n time: " << time << "\t\ti: " << i << std::endl;
+// 	    std::cout << "posx: " << prevPosXD << "\t\tposy: " << prevPosYD << std::endl;
+// 	    std::cout << "px: " << px << "\t\tpy: " << py << std::endl;
+// 	    std::cout << "lx: " << px << "\t\tly: " << py << std::endl;
+// 	    std::cout << "supido: " << dogSpeed << "\t\taltered: " << dog[i].alteredSpeed << 
+// 	    "\tmVarSpeed: " << minVarSpeed << "\tMVarSpeed: " << maxVarSpeed<<
+// 	    std::endl;
+// 	    std::cout << "vx: " << dog[i].getVersor()[0] << "\t\tvy: " << dog[i].getVersor()[1] << std::endl;
+//  	    std::cout << "scaleSine: " << dog[i].scaleSine << "\tangle" << ANGLE<< 
+//  	    "\t state: " << dog[i].state << 
+//  	    std::endl;
+// 	  }
         }
-        directionVectord.x = (*(dog[i].getVersor().begin())) * timeStep * dogSpeed;
-	directionVectord.y = *(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed;
-//  	directionVectord.Rotate(prueba.angle + 4.71238898038469);
-	if(time > 2000){
-	  std::cout << "angulo: " << prueba.angle << "\n\tpreVec.x: " <<
-	  *(dog[i].getVersor().begin()) * timeStep * dogSpeed << "\tprevVec.y: " <<
-	  *(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed <<
-	  "\n\tdirec.x: " << directionVectord.x << "\tdirex.y: " << directionVectord.y << std::endl; 
-	}
-        dog[i].setPosition(
+//         if(i!=0){
+	dog[i].setPosition(
             time,	
-            prevPosXD + directionVectord.x/*(*(dog[i].getVersor().begin()) + dirVec.front()) * timeStep * dogSpeed*/, //TODO: replace with vector2d
-            prevPosYD + directionVectord.y/**(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed*/,
+            prevPosXD + dog[i].getVersor()[0]*timeStep*dogSpeed, //TODO: replace with vector2d
+            prevPosYD + dog[i].getVersor()[1]*timeStep*dogSpeed,
             dogSpeed);
+// 	} else {
+// 	dog[i].setPosition(
+//             time,	
+//             lx,
+//             ly,
+//             dogSpeed);
+// 	}
         break;
 
       /*idem ff,but for dogs*/
@@ -616,7 +717,6 @@ int main(int argc, char **argv) {
 
       /*ïdem ff, but for dogs*/
       case LINEAR_AVOIDING_OBSTACLE:
-
         for (int j = 0; j < obstaclesNumber; j++) {
           distanceToPoint =
               obstacle[j].getDistanceToPoint(prevPosXD, prevPosYD);
@@ -659,7 +759,9 @@ int main(int argc, char **argv) {
           dog[i].calcVersor(*(dog[i].previousPosition.begin()), prevPosYD);
           dog[i].state = RETURNING;
         }
-        dog[i].setPosition(time, prevPosXD, prevPosYD + timeStep * ffSpeed,
+        dog[i].setPosition(time, 
+			   prevPosXD, 
+			   prevPosYD + timeStep * ffSpeed,
                            ffSpeed);
         break;
 
@@ -674,16 +776,19 @@ int main(int argc, char **argv) {
           dog[i].state = SINE;
         }
 
-        dog[i].setPosition(
-            time,
-            prevPosXD + *(dog[i].getVersor().begin()) * timeStep * ffSpeed,
-            prevPosYD + *(dog[i].getVersor().begin() + 1) * timeStep * ffSpeed,
-            ffSpeed);
+        dog[i].setPosition(time,
+			   prevPosXD + *(dog[i].getVersor().begin()) * timeStep * ffSpeed,
+			   prevPosYD + *(dog[i].getVersor().begin() + 1) * timeStep * ffSpeed,
+			   ffSpeed
+			  );
         break;
 
       /*dog has gone astray, running to a random position*/
       case ASTRAY:
-	//ACHAY
+// 	  std::cout << "atime: " << time << "\tposx: " << prevPosXD << "\tposy: " << prevPosYD 
+// 	  << "\nvx: " << dog[i].getVersor()[0] << "\tvy: " << dog[i].getVersor()[1] 
+// 	  << std::endl;
+	dog[i].scaleSine += timeStep; //FIXME
 	if(distanceBetween2Points(dog[i].getNextPosition()[0], dog[i].getNextPosition()[1],
 				  prevPosXD, prevPosYD) <
 	   timeStep * DOG_SPEED + STD_DEVIATION){
@@ -694,29 +799,49 @@ int main(int argc, char **argv) {
                 << std::endl;
           dog[i].state = RETURNING_TO_FF;
         }
-        dog[i].setPosition(
-            time,
-            prevPosXD + *(dog[i].getVersor().begin()) * timeStep * dogSpeed,
-            prevPosYD + *(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed,
-            dogSpeed);
+        dog[i].setPosition(time,
+			   prevPosXD + *(dog[i].getVersor().begin()) * timeStep * dogSpeed,
+			   prevPosYD + *(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed,
+			   dogSpeed
+			  );
         break;
 
       /*After leaving the ASTRAY state, the dog will take the shortest path to
        * return to the firefighter */
       case RETURNING_TO_FF:
+	dog[i].scaleSine += timeStep; //FIXME
         dog[i].calcVersor(prevPosXFF, prevPosYFF);
-        dog[i].setPosition(
-            time,
-            prevPosXD + *(dog[i].getVersor().begin()) * timeStep * dogSpeed,
-            prevPosYD + *(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed,
-            dogSpeed);
+        dog[i].setPosition(time,
+			   prevPosXD + *(dog[i].getVersor().begin()) * timeStep * dogSpeed,
+			   prevPosYD + *(dog[i].getVersor().begin() + 1) * timeStep * dogSpeed,
+			   dogSpeed
+			  );
 	if( distanceBetween2Points(prevPosXD, prevPosYD, prevPosXFF, prevPosYFF) < 5 ){
           if (verbose)
             std::cout << "[I] (@" << time << ") dog[" << i
                       << "] has returned to firefighter." << std::endl;
           dog[i].state = SINE;
+	  /*set the time in which the dog returned to the ff*/
+	  dog[i].refractoryPeriod = time;
+	  /*update scaleSine so that the dog continues from where them ff is*/
+// 	  get position of ff and antirotate it
+	  double xNormal = prevPosXFF * std::cos(ANGLE - PI/4) + prevPosYFF * std::sin(ANGLE - PI/4 );/* - firefighter[i].getPosition()[1];*/
+	  double yNormal = - prevPosXFF * std::cos(ANGLE - PI/4) + prevPosYFF * std::sin(ANGLE - PI/4);/* - firefighter[i].getPosition()[2];FIXME*/
+	  //FIXME: Try with different initial y
+// 	  dog[i].scaleSine += std::abs(prevPosYD - ly)*std::cos(ANGLE);
+	  double tmpy, tmpx, tmppy, tmppx;
+	  tmpy = yNormal;
+	  tmpx = DELTA_X * std::sin(tmpy/8);
+	  
+	  /*rotate the sine, and translate if it's not in the origin*/
+	  tmppx = tmpx * std::cos(ANGLE) - tmpy * std::sin(ANGLE) + dog[i].getPosition()[1];
+	  tmppy = tmpx * std::sin(ANGLE) + tmpy * std::cos(ANGLE) + dog[i].getPosition()[2];
+	  std::cout << "\nSSine: " << dog[i].scaleSine << "\tly: "  << ly
+	  << "\nffx: " << prevPosXFF << "\tffy: " << prevPosYFF 
+	  << "\nddx:" << prevPosXD << "\tddy: " << prevPosYD
+	  << "\nyARotated: " << yNormal << "\txRotated: " <<   xNormal
+	  << std::endl;
         }
-
         break;
       }
     }
