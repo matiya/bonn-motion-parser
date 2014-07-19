@@ -7,6 +7,7 @@
  * @bugs: * put the name of the nodes in the class constructor so that the two
  * 	    switches can be avoided
  *	  * Update sineScale according to ff position
+ * 	  * The angle nomenclature can't be understood, please fix asap.
 */
 
 /**
@@ -621,42 +622,48 @@ int main(int argc, char **argv)
         } else {
 
 	  /*if dog is departed from firefighter catch up*/
-// 	  if( distanceBetween2Points(prevPosXD, prevPosYD, prevPosXFF, prevPosYFF) > DELTA_X /*+ 15*/){
-// 	    if(time > 20 and time < 50 and i == 1){
-// 	      std::cout << "Dposx: " << prevPosXD << "\t\tDposy: " << prevPosYD << std::endl;
-// 	      std::cout << "Fposx: " << prevPosXFF << "\t\tFposy: " << prevPosYFF << std::endl;
-// 	      std::cout << "angle: " << ANGLE << std::endl;
-// 	    }
+	  if( distanceBetween2Points(prevPosXD, prevPosYD, prevPosXFF, prevPosYFF) > DELTA_X /*+ 15*/){
+	    if(time > 100 and time < 170 and i == 1){
+	      std::cout << "Dposx: " << prevPosXD << "\t\tDposy: " << prevPosYD << std::endl;
+	      std::cout << "Fposx: " << prevPosXFF << "\t\tFposy: " << prevPosYFF << std::endl;
+	      std::cout << "angle: " << ANGLE + PI/2 << "\tscaleSineprev: " << dog[i].scaleSine 
+	      << std::endl;
+	    }
 	    /*going up*/
-// 	    if(ANGLE > 0)
-// 	      if(prevPosYD > prevPosXFF)
-// 		dog[i].scaleSine += 0;
-// 	      else if( prevPosYD < prevPosXFF)
-// 		dog[i].scaleSine += 1.5*timeStep;
-// 	      
-// 	    /*going right*/
-// 	    if(ANGLE == 0)
-// 	      if(prevPosXD > prevPosXFF)
-// 		dog[i].scaleSine += 0;
-// 	      else if(prevPosXD < prevPosXFF)
-// 		dog[i].scaleSine += 1.5*timeStep;
-// 	      
-// 	    /*going down*/
-// 	    if(ANGLE < 0)
-// 	      if( (prevPosYD + DELTA_X) > prevPosYFF){
-// 		dog[i].scaleSine += 1.5*timeStep;
-// 	      }
-// 	      else if( (prevPosYD + 100) < prevPosYFF)
-// 		dog[i].scaleSine += 0;
-// 	    /*going left*/
-// 	    if(abs (ANGLE- PI) < 0.1)
-// 	      if(prevPosXD > prevPosXFF)
-// 		dog[i].scaleSine += 1.5*timeStep;
-// 	      else if(prevPosXD < prevPosXFF)
-// 		dog[i].scaleSine += 0;
-// 	  } else{
+	    if( (ANGLE + PI/2) > 0)
+	      if(prevPosYD > (prevPosYFF + DELTA_X) )
+		dog[i].scaleSine += 0.5*timeStep;
+	      else if( prevPosYD <= (prevPosYFF + DELTA_X/2) )
+		dog[i].scaleSine += 1.5*timeStep;
+	      
+	    /*going right*/
+	    if( (ANGLE + PI/2) == 0)
+	      if(prevPosXD > (prevPosXFF + DELTA_X) )
+		dog[i].scaleSine += 0.5*timeStep;
+	      else if(prevPosXD < (prevPosXFF + DELTA_X/2) )
+		dog[i].scaleSine += 1.5*timeStep;
+	      
+	    /*going down*/
+	    if( (ANGLE + PI/2) < 0)
+	      /*make sure the dogs follow within a distance of DELTA_X/2 to DELTA_X*/
+	      if( prevPosYD <= (prevPosYFF - DELTA_X))
+		dog[i].scaleSine += 0.5*timeStep;
+	      else if( prevPosYD > (prevPosYFF - DELTA_X/2))
+		dog[i].scaleSine += 1.5*timeStep;
+		std::cout << "or rather here " << std::endl;
+	      
+	    /*going left*/
+	    if(abs (ANGLE - PI/2) < 0.1)
+	      if(prevPosXD > (prevPosXFF - DELTA_X/2) )
+		dog[i].scaleSine += 1.5*timeStep;
+	      else if(prevPosXD <= (prevPosXFF - DELTA_X) )
+		dog[i].scaleSine += 0.5*timeStep;
+	    if(time > 100 and time < 170 and i == 2){
+	      std::cout << "scaleSinepost: " << dog[i].scaleSine << std::endl;
+	    }
+	  } else{
 	    dog[i].scaleSine += timeStep; 
-// 	  }
+	  }
 	  //FIXME: This is set based on sheer experience
 	  py = dog[i].scaleSine * dogSpeed * 0.2;
 	  px = DELTA_X * std::sin(py/8);
@@ -666,19 +673,19 @@ int main(int argc, char **argv)
 	  ly = px * std::sin(ANGLE) + py * std::cos(ANGLE) + dog[i].getPosition()[2];
 	  	  
 	  dog[i].calcVersor(lx, ly);
-// 	  if( time > 291){
-// 	    std::cout <<"\n time: " << time << "\t\ti: " << i << std::endl;
-// 	    std::cout << "posx: " << prevPosXD << "\t\tposy: " << prevPosYD << std::endl;
-// 	    std::cout << "px: " << px << "\t\tpy: " << py << std::endl;
-// 	    std::cout << "lx: " << px << "\t\tly: " << py << std::endl;
-// 	    std::cout << "supido: " << dogSpeed << "\t\taltered: " << dog[i].alteredSpeed << 
-// 	    "\tmVarSpeed: " << minVarSpeed << "\tMVarSpeed: " << maxVarSpeed<<
-// 	    std::endl;
-// 	    std::cout << "vx: " << dog[i].getVersor()[0] << "\t\tvy: " << dog[i].getVersor()[1] << std::endl;
-//  	    std::cout << "scaleSine: " << dog[i].scaleSine << "\tangle" << ANGLE<< 
-//  	    "\t state: " << dog[i].state << 
-//  	    std::endl;
-// 	  }
+	  if( i == 3 and time > 191 and time < 210){
+	    std::cout <<"\n time: " << time << "\t\ti: " << i << std::endl;
+	    std::cout << "posx: " << prevPosXD << "\t\tposy: " << prevPosYD << std::endl;
+	    std::cout << "px: " << px << "\t\tpy: " << py << std::endl;
+	    std::cout << "lx: " << px << "\t\tly: " << py << std::endl;
+	    std::cout << "supido: " << dogSpeed << "\t\taltered: " << dog[i].alteredSpeed << 
+	    "\tmVarSpeed: " << minVarSpeed << "\tMVarSpeed: " << maxVarSpeed<<
+	    std::endl;
+	    std::cout << "vx: " << dog[i].getVersor()[0] << "\t\tvy: " << dog[i].getVersor()[1] << std::endl;
+ 	    std::cout << "scaleSine: " << dog[i].scaleSine << "\tangle" << ANGLE<< 
+ 	    "\t state: " << dog[i].state << 
+ 	    std::endl;
+	  }
         }
 //         if(i!=0){
 	dog[i].setPosition(
@@ -825,22 +832,22 @@ int main(int argc, char **argv)
 	  dog[i].refractoryPeriod = time;
 	  /*update scaleSine so that the dog continues from where them ff is*/
 // 	  get position of ff and antirotate it
-	  double xNormal = prevPosXFF * std::cos(ANGLE - PI/4) + prevPosYFF * std::sin(ANGLE - PI/4 );/* - firefighter[i].getPosition()[1];*/
-	  double yNormal = - prevPosXFF * std::cos(ANGLE - PI/4) + prevPosYFF * std::sin(ANGLE - PI/4);/* - firefighter[i].getPosition()[2];FIXME*/
-	  //FIXME: Try with different initial y
-// 	  dog[i].scaleSine += std::abs(prevPosYD - ly)*std::cos(ANGLE);
-	  double tmpy, tmpx, tmppy, tmppx;
-	  tmpy = yNormal;
-	  tmpx = DELTA_X * std::sin(tmpy/8);
-	  
-	  /*rotate the sine, and translate if it's not in the origin*/
-	  tmppx = tmpx * std::cos(ANGLE) - tmpy * std::sin(ANGLE) + dog[i].getPosition()[1];
-	  tmppy = tmpx * std::sin(ANGLE) + tmpy * std::cos(ANGLE) + dog[i].getPosition()[2];
-	  std::cout << "\nSSine: " << dog[i].scaleSine << "\tly: "  << ly
-	  << "\nffx: " << prevPosXFF << "\tffy: " << prevPosYFF 
-	  << "\nddx:" << prevPosXD << "\tddy: " << prevPosYD
-	  << "\nyARotated: " << yNormal << "\txRotated: " <<   xNormal
-	  << std::endl;
+// 	  double xNormal = prevPosXFF * std::cos(ANGLE - PI/4) + prevPosYFF * std::sin(ANGLE - PI/4 );/* - firefighter[i].getPosition()[1];*/
+// 	  double yNormal = - prevPosXFF * std::cos(ANGLE - PI/4) + prevPosYFF * std::sin(ANGLE - PI/4);/* - firefighter[i].getPosition()[2];FIXME*/
+// 	  //FIXME: Try with different initial y
+// // 	  dog[i].scaleSine += std::abs(prevPosYD - ly)*std::cos(ANGLE);
+// 	  double tmpy, tmpx, tmppy, tmppx;
+// 	  tmpy = yNormal;
+// 	  tmpx = DELTA_X * std::sin(tmpy/8);
+// 	  
+// 	  /*rotate the sine, and translate if it's not in the origin*/
+// 	  tmppx = tmpx * std::cos(ANGLE) - tmpy * std::sin(ANGLE) + dog[i].getPosition()[1];
+// 	  tmppy = tmpx * std::sin(ANGLE) + tmpy * std::cos(ANGLE) + dog[i].getPosition()[2];
+// 	  std::cout << "\nSSine: " << dog[i].scaleSine << "\tly: "  << ly
+// 	  << "\nffx: " << prevPosXFF << "\tffy: " << prevPosYFF 
+// 	  << "\nddx:" << prevPosXD << "\tddy: " << prevPosYD
+// 	  << "\nyARotated: " << yNormal << "\txRotated: " <<   xNormal
+// 	  << std::endl;
         }
         break;
       }
