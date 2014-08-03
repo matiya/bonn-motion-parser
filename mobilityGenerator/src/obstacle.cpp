@@ -30,26 +30,26 @@ Obstacle::vertex Obstacle::getClosestVertex(double a, double b){
   double rDistance = 0;
   rDistance = std::sqrt( std::pow(vertiStruct.x2 -a,2) + std::pow(vertiStruct.y2 -b,2));
   lDistance = std::sqrt( std::pow(vertiStruct.x1 -a,2) + std::pow(vertiStruct.y1 -b,2));
-//   std::cout << "X: " << FIELD_SIZE_X << std::endl;
   if(rDistance >  lDistance){
-    if(vertiStruct.x1 - 5 > 0){
+    //FIXME: There used to be FIELD_SIZE checking here, but now its gone.
+//     if(vertiStruct.x1 - 5 > 0){
       vertixStruct.x = vertiStruct.x1;
       vertixStruct.y = vertiStruct.y1;
-    }
-    else{
-      vertixStruct.x = vertiStruct.x2;
-      vertixStruct.y = vertiStruct.y2;
-    }
+//     }
+//     else{
+//       vertixStruct.x = vertiStruct.x2;
+//       vertixStruct.y = vertiStruct.y2;
+//     }
   }
   else if(rDistance <  lDistance){
-    if(vertiStruct.x2 + 5 < FIELD_SIZE_X){
+//     if(vertiStruct.x2 + 5 < FIELD_SIZE_X){
       vertixStruct.x = vertiStruct.x2;
       vertixStruct.y = vertiStruct.y2;
-    }
-    else{
-      vertixStruct.x = vertiStruct.x1;
-      vertixStruct.y = vertiStruct.y1;
-    }
+//     }
+//     else{
+//       vertixStruct.x = vertiStruct.x1;
+//       vertixStruct.y = vertiStruct.y1;
+//     }
   }
   else if(rDistance == lDistance){
     if(vertiStruct.x1 == vertiStruct.x2){
@@ -63,7 +63,7 @@ Obstacle::vertex Obstacle::getClosestVertex(double a, double b){
   }
   else{
     std::cout << "[E] Obstacle can't be avoided." << std::endl;
-    std::terminate();
+    std::exit(-1);
   }
   return vertixStruct;
   

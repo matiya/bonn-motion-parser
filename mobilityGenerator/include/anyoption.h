@@ -20,7 +20,7 @@
 #define FILE_FLAG_TYPE 		4 
 #define UNKNOWN_TYPE 		5
 
-#define DEFAULT_MAXOPTS 	10
+#define DEFAULT_MAXOPTS 	20
 #define MAX_LONG_PREFIX_LENGTH 	2
 
 #define DEFAULT_MAXUSAGE	3

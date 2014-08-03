@@ -21,12 +21,10 @@
 
 Vector2D finalPosition;
 unsigned long SAMPLES_NUMBER;
-unsigned long DELTA_X;
-unsigned long DELTA_Y;
 unsigned long DURATION;
-unsigned long SEED;
 unsigned long FIELD_SIZE_X;
 unsigned long FIELD_SIZE_Y;
+unsigned int AMPLITUDE;
 unsigned int PROB;
 unsigned int NUM_NODES;
 unsigned int LOS;
@@ -36,6 +34,9 @@ double DOG_SPEED;
 double INITIAL_X;
 double INITIAL_Y;
 double ANGLE;
+int DELTA_X;
+int DELTA_Y;
+int SEED;
 bool verbose;
 std::string FILE_NAME; 
 std::string OBSTACLES_FILE;
@@ -114,8 +115,9 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.addUsage( " -i   --finalx\t\tfinal position in x");
     cmd.addUsage( " -j   --finaly\t\tfinal position in y");
     cmd.addUsage( " -r   --speed\t\tspeed of the firefighters");
-    cmd.addUsage( " -X   --deltaX\t\tamplitude of the sine wave in meters (in meters)");
-    cmd.addUsage( " -Y   --deltaY\t\toffset between the firefighters and the dogs (in meters)");
+    cmd.addUsage( " -X   --deltaX\t\tspacing between nodes across the X axis (in meters)");
+    cmd.addUsage( " -Y   --deltaY\t\tspacing between nodes across the Y axis (in meters)");
+    cmd.addUsage( " -A   --amplitude\t\tamplitude of the sine wave (in meters)");
     cmd.addUsage( " -l   --los\t\tlength of line of sight of the nodes (in meters)");
     cmd.addUsage( " -S   --seed\t\tseed, if set to 0 it will be random");
     cmd.addUsage( " -o   --obstacles\t\tobstacles file name");
@@ -140,6 +142,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     cmd.setOption(  "finaly", 'j' ); 
     cmd.setOption(  "deltaX", 'X' ); 
     cmd.setOption(  "deltaY", 'Y' ); 
+    cmd.setOption(  "amplitude", 'A' ); 
     cmd.setOption(  "los", 'l' ); 
     cmd.setOption(  "seed", 'S' ); 
     cmd.setOption(  "obstacles", 'o' ); 
@@ -212,11 +215,11 @@ std::vector<float> askForParameters( int argc, char **argv){
     }
     
     if( cmd.getValue( 'd' ) != NULL  || cmd.getValue( "duration" ) != NULL  ){
-      DURATION = atoi(cmd.getValue('d')); 
+      DURATION = atoi(cmd.getValue('d'));
     }
     else{
       std::cout << "[W] USING DEFAULT: duration = 1000s" << std::endl;
-      DURATION = 1000;     
+      DURATION = 1000;
     }
     
     if( cmd.getValue( 'p' ) != NULL  || cmd.getValue( "probability" ) != NULL  ){
@@ -224,7 +227,7 @@ std::vector<float> askForParameters( int argc, char **argv){
     }
     else{
       std::cout << "[W] USING DEFAULT: probability = 0.005" << std::endl;
-      PROB = 5;     
+      PROB = 5;
     }
     
         
@@ -232,7 +235,7 @@ std::vector<float> askForParameters( int argc, char **argv){
       DELTA_X = atoi(cmd.getValue('X')); 
     }
     else{
-      DELTA_X = FIELD_SIZE_X / (NUM_NODES * 2);     
+      DELTA_X = FIELD_SIZE_X / NUM_NODES;
       std::cout << "[W] USING DEFAULT: deltaX = " << DELTA_X << std::endl;
     }
            
@@ -240,27 +243,34 @@ std::vector<float> askForParameters( int argc, char **argv){
       DELTA_Y = atoi(cmd.getValue('Y')); 
     }
     else{
-      std::cout << "[W] USING DEFAULT: deltaY = 5" << std::endl;
-      DELTA_Y = 5;     
+      std::cout << "[W] USING DEFAULT: deltaY = 0" << std::endl;
+      DELTA_Y = 0;     
     }
     
+    if( cmd.getValue( 'A' ) != NULL  || cmd.getValue( "amplitude" ) != NULL  ){
+      AMPLITUDE = atoi(cmd.getValue('A')); 
+    }
+    else{
+      AMPLITUDE = FIELD_SIZE_X / (NUM_NODES * 2);
+      if(AMPLITUDE > 50)
+	AMPLITUDE = 50;
+      std::cout << "[W] USING DEFAULT: amplitude = " << AMPLITUDE << std::endl;
+    }
     if( cmd.getValue( 'l' ) != NULL  || cmd.getValue( "los" ) != NULL  ){
-//       FIXME: Get this value from map info
       LOS = atoi(cmd.getValue('l')); 
     }
     else{
       std::cout << "[W] USING DEFAULT: LoS = 80" << std::endl;
-      LOS = 80;     
+      LOS = 80;
     }
-    
+
     if( cmd.getValue( 'f' ) != NULL  || cmd.getValue( "file" ) != NULL  ){
       FILE_NAME = (cmd.getValue('f')); 
     }
     else{
       std::cout << "[W] USING DEFAULT: file name \"scenario\"" << std::endl;
-      FILE_NAME = "scenario" ;     
+      FILE_NAME = "scenario" ;
     }
-    
     
     if( cmd.getValue( 'o' ) != NULL  || cmd.getValue( "obstacles" ) != NULL  ){
       OBSTACLES_FILE = (cmd.getValue('o')); 
@@ -276,10 +286,10 @@ std::vector<float> askForParameters( int argc, char **argv){
     }
     else{
       std::cout << "[W] no SEED specified, using random" << std::endl;
-      SEED = 0;     
+      SEED = 0;
     }
 
-     DOG_SPEED = (SINE_ARC_LENGTH*DELTA_X*SPEED_NODES)/(16*PI);//FIXME: 16PI is the distance travel by the ff while cos(y/8)
+     DOG_SPEED = (SINE_ARC_LENGTH*AMPLITUDE*SPEED_NODES)/(16*PI);//FIXME: 16PI is the distance travel by the ff while cos(y/8)
      //FIXME: According to the internet an average speed would be 11 m/s, that is running. But do the dogs run or walk or gallop or?
      std::cout << "[W] Average speed of dogs: " << DOG_SPEED << "m/s. \n    Please check that this is a sane value. \n" << 
 		   "    The average running speed of a dog lies between 7.8m/s and 13.6m/s." << std::endl;
@@ -292,8 +302,8 @@ std::vector<float> askForParameters( int argc, char **argv){
       STD_DEVIATION = atof(cmd.getValue('D')); 
     }
     else{
-      std::cout << "[W] USING DEFAULT: deviation" << std::endl;
-      STD_DEVIATION = DOG_SPEED/2;     
+      STD_DEVIATION = DOG_SPEED/2;
+      std::cout << "[W] USING DEFAULT: deviation =" << STD_DEVIATION << std::endl;
     }
     if( cmd.getValue( 'I' ) != NULL  || cmd.getValue( "initialx" ) != NULL  ){
       INITIAL_X = atof(cmd.getValue('I')); 

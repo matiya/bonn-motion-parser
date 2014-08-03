@@ -161,7 +161,8 @@ public:
    * @brief vector used to store a position the node must return to.
    *
    */
-  std::vector<double> previousPosition = { 0, 0 }; // C++11
+  Vector2D previousPosition;
+//   std::vector<double> previousPosition = { 0, 0 }; // C++11
 };
 
 #endif // NODE_H
