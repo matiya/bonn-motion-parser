@@ -1,4 +1,5 @@
-bonn-motion-parser
+group mobility generator
 ==================
 
-plots and parses the different outputs produced by bonn motion using matplotlib
+Generates traces for a search and rescue scenario.
+For more info, see: http://nbviewer.ipython.org/github/matiya/groupMobility/blob/master/mobilityModel.ipynb
